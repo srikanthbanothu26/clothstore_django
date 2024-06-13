@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -83,9 +83,9 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "defaultdb",
         "USER": "avnadmin",
-        "PASSWORD": "AVNS_QjVhEfg-jdFcmpTNb9R",
-        "HOST": "pg-236e4126-vijay-b.h.aivencloud.com",
-        "PORT": "26485",
+        "PASSWORD": "AVNS_d3-sc5JeWUnKJAgPjx7",
+        "HOST": "pg-185fedd6-banothusrikanth267-d588.f.aivencloud.com",
+        "PORT": "26621",
     }
 }
 
@@ -121,7 +121,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-import os
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 

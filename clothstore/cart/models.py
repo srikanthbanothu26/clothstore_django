@@ -20,7 +20,6 @@ class Cart(models.Model):
 
 class Address(models.Model):
     first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
     address = models.TextField()
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)

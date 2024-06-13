@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runway Shirts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block child_styles %}
+    {% endblock %}
+
+    {% block child_main_scripts %}
+    {% endblock %}
+
+    
+  </head>
+  <body>
+    <nav class="flex p-8 gap-8">
+        <div class="flex items-center gap-4 grow">
+          <h1 class="font-bold text-3xl underline">RunWay</h1>
+  
+          
+          <form method="get" class="w-full" onsubmit="searchShirts(event)">
+            <input
+              type="text"
+              class="border text-lg border-gray-400 rounded-lg w-full p-2"
+              placeholder="what are you looking for?"
+              id="search-input"
+              name="search"
+            />
+            <button type="submit" class="hidden">Submit</button>
+          </form>
+        </div>
+  
+        <ul class="flex items-center gap-4">
+          <li>
+            <a href="{%  url  'cart'  %}" >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-6 h-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
+                />
+              </svg>
+            </a>
+          </li>
+  
+          <li>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 9h16.5m-16.5 6.75h16.5"
+              />
+            </svg>
+          </li>
+  
+          <li>
+            <a class="text-lg font-medium underline hover:text-rose-600 cursor-pointer" 
+            href = "{%  url  'customer_logout'  %}" >
+              Logout
+            </a>
+          </li>
+  
+        </ul>
+      </nav>
+
+      {% block content %}
+      {% endblock %} 
+
+
+
+      <script>
+        const BASE_URL = "http://" + window.location.host + "/"
+      const ADD_CART_URL = `http://${window.location.host}/cart/add/`
+            function searchShirts(event) {
+        // this will prevent the form from submitting
+       event.preventDefault();
+
+        const searchText = event.target.search.value;
+
+        const url = BASE_URL +  "?search=" + searchText;
+        window.location.href = url;
+    
+      }
+    
+      </script>
+
+{% block child_scripts %}
+{% endblock %}
+</body>
+
+</html>

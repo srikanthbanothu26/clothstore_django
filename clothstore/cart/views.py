@@ -65,11 +65,36 @@ def remove_from_cart(request, shirt_id):
     return JsonResponse({"success": "Shirt removed from cart"})
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Address
+from django.http import JsonResponse
+
 @login_required
 def checkout_page(request):
-    return render(request, "checkout.html")
+    if request.method == "POST":
+        first_name = request.POST.get('first_name')
+        email = request.POST.get('email')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        zip_code = request.POST.get('zip')
+        phone = request.POST.get('phone')
 
+        if not (first_name and email and address and city and state and zip_code and phone):
+            return JsonResponse({'success': False, 'message': 'All fields are required.'}, status=400)
 
-@login_required
-def address_page(request):
-    return render(request, "address_page.html")
+        Address.objects.create(
+            user=request.user,
+            first_name=first_name,
+            address=address,
+            city=city,
+            state=state,
+            pincode=zip_code,
+            mobile=phone
+        )
+        return JsonResponse({'success': True, 'message': 'Address added successfully!'})
+    
+    addresses = Address.objects.filter(user=request.user)
+    return render(request, 'checkout.html',{'addresses': addresses})  # Ensure you have this template in your templates directory
+
