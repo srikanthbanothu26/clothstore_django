@@ -14,9 +14,21 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from .views import home, second_page
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-]
+    path("admin/", admin.site.urls),
+    path(
+        "", home
+    ),  # if the user goes to the root URL(/), they will be redirected to the home view
+    # route for /second
+    path("second", second_page),
+    path("store/", include("store.urls")),
+    path("auth/", include("userauth.urls")),
+    path("cart/", include("cart.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

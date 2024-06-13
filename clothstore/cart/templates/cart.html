@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <section
+      class="relative z-10 after:contents-[''] after:absolute after:z-0 after:h-full xl:after:w-1/3 after:top-0 after:right-0 after:bg-gray-50"
+    >
+    
+      <div class="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto relative z-10">
+        
+        <div class="grid grid-cols-12">
+          <div
+            class="col-span-12 xl:col-span-8 lg:pr-8 pt-14 pb-8 lg:py-24 w-full max-xl:max-w-3xl max-xl:mx-auto"
+          >
+            <div
+              class="flex items-center justify-between pb-8 border-b border-gray-300"
+            >
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Shopping Cart
+              </h2>
+              <h2
+                
+                class="text-xl font-semibold text-gray-900 dark:text-white"
+              >
+                {{ quantity }} Items
+              </h2>
+            </div>
+            <div
+              class="grid grid-cols-12 mt-8 max-md:hidden pb-6 border-b border-gray-200"
+            >
+              <div class="col-span-12 md:col-span-7">
+                <p class="font-normal text-lg leading-8 text-gray-400">
+                  Product Details
+                </p>
+              </div>
+              <div class="col-span-12 md:col-span-5">
+                <div class="grid grid-cols-5">
+                  <div class="col-span-3">
+                    <p
+                      class="font-normal text-lg leading-8 text-gray-400 text-center"
+                    >
+                      Quantity
+                    </p>
+                  </div>
+                  <div class="col-span-2">
+                    <p
+                      class="font-normal text-lg leading-8 text-gray-400 text-center"
+                    >
+                      Total
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- div element to show if the cart is empty -->
+            {% if cart|length == 0 %}
+            <div class="flex items-center justify-center h-[500px]">
+              <h2 class="text-3xl leading-10 text-gray-600">
+                Your cart is empty
+              </h2>
+            </div>
+            {% endif %}   
+
+
+
+            {% for item in cart %}
+
+            <div
+                id = "{{item.shirt.id}}-cart-item"
+              class="flex flex-col min-[500px]:flex-row min-[500px]:items-center gap-5 py-6 border-b border-gray-200 group"
+            >
+              <div class="w-full md:max-w-[126px]">
+                <img
+                  src="{{ item.shirt.image.url }}"
+                  alt="perfume bottle image"
+                  class="mx-auto object-cover rounded-lg"
+                />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-4 w-full">
+                <div >
+                  <div class="flex flex-col max-[500px]:items-center gap-3">
+                    <h6 class="font-semibold text-base leading-7 text-black">
+                      {{ item.shirt.name }}
+                    </h6>
+                    <h6 class="font-normal text-base leading-7 text-gray-500">
+                      {{ item.shirt.category }}
+                    </h6>
+                    <h6
+                      class="font-medium text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-indigo-600"
+                    >
+                      {% if item.shirt.discountPrice %} 
+                      ₹{{item.shirt.discountPrice }} 
+                      {% else %} 
+                      ₹{{item.shirt.price }}
+                       {% endif %}
+                    </h6>
+                  </div>
+                </div>
+                <div
+                  class="col-span-2 place-self-end flex items-center max-[500px]:justify-center h-full max-md:mt-3"
+                >
+                  <div class="flex items-center h-full">
+                    <button
+                      class="group rounded-l-xl px-5 py-[18px] border border-gray-200 flex items-center justify-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-gray-50 hover:border-gray-300 hover:shadow-gray-300 focus-within:outline-gray-300"
+                      onclick="removeFromCart(this, {{ item.shirt.id }})"
+                    >
+                      <svg
+                        class="stroke-gray-900 transition-all duration-500 group-hover:stroke-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="22"
+                        height="22"
+                        viewBox="0 0 22 22"
+                        fill="none"
+                      >
+                        <path
+                          d="M16.5 11H5.5"
+                          stroke=""
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M16.5 11H5.5"
+                          stroke=""
+                          stroke-opacity="0.2"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M16.5 11H5.5"
+                          stroke=""
+                          stroke-opacity="0.2"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </button>
+                    <input
+                      type="text"
+                      class="quantity border-y border-gray-200 outline-none text-gray-900 font-semibold text-lg w-full max-w-[73px] min-w-[60px] placeholder:text-gray-900 py-[15px] text-center bg-transparent"
+                      placeholder="{{ item.quantity }}"
+                      disabled
+                    />
+                    <button
+                      class="group rounded-r-xl px-5 py-[18px] border border-gray-200 flex items-center justify-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-gray-50 hover:border-gray-300 hover:shadow-gray-300 focus-within:outline-gray-300"
+                      onclick="addToCart(this, {{ item.shirt.id }})"
+                    >
+                      <svg
+                        class="stroke-gray-900 transition-all duration-500 group-hover:stroke-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="22"
+                        height="22"
+                        viewBox="0 0 22 22"
+                        fill="none"
+                      >
+                        <path
+                          d="M11 5.5V16.5M16.5 11H5.5"
+                          stroke=""
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M11 5.5V16.5M16.5 11H5.5"
+                          stroke=""
+                          stroke-opacity="0.2"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                        />
+                        <path
+                          d="M11 5.5V16.5M16.5 11H5.5"
+                          stroke=""
+                          stroke-opacity="0.2"
+                          stroke-width="1.6"
+                          stroke-linecap="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center max-[500px]:justify-center md:justify-end max-md:mt-3 h-full"
+                >
+                {% if item.shirt.discountPrice %} 
+                  <p
+                    data-shirt-price="{{ item.shirt.discountPrice }}"
+                    id="{{item.shirt.id}}-price"
+                    class="font-bold text-lg leading-8 text-gray-600 text-center transition-all duration-300 group-hover:text-indigo-600"
+                  >
+                    ₹{% widthratio item.shirt.discountPrice 1 item.quantity %} 
+                    
+                </p>
+                {% else %} 
+                <p
+                  data-shirt-price="{{ item.shirt.price }}"
+                  id = "{{item.shirt.id}}-price"
+                  class="font-bold text-lg leading-8 text-gray-600 text-center transition-all duration-300 group-hover:text-indigo-600"
+                >
+                  ₹{% widthratio item.shirt.price 1 item.quantity %} 
+                  
+              </p>
+
+                {% endif %}
+            </div>
+              </div>
+            </div>
+
+            {% endfor %}
+
+           
+          </div>
+          <div
+            class="col-span-12 xl:col-span-4 bg-gray-50 w-full max-xl:px-6 max-w-3xl xl:max-w-lg mx-auto lg:pl-8 py-24"
+          >
+            <h2
+              class="text-2xl font-semibold text-gray-900 dark:text-white"
+            >
+              Order Summary
+            </h2>
+            <div class="mt-8">
+             
+              
+                
+                <div class="flex items-center justify-between py-8">
+                  <p class="font-medium text-xl leading-8 text-black total-items">
+                    {{ quantity }} Items
+                  </p>
+                  <p class="font-semibold text-xl leading-8 text-indigo-600">
+                    $485.00
+                  </p>
+                </div>
+                <a href="{% url 'checkout'  %}">
+                <button
+                  class="w-full text-center bg-indigo-600 rounded-xl py-3 px-6 font-semibold text-lg text-white transition-all duration-500 hover:bg-indigo-700"
+                >
+
+                  Checkout
+                </button>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+  </section>
+    <script>
+      const BASE_URL = "http://" + window.location.host + "/cart";
+
+      function updateCartQuantity() {
+          const totalItems = document.querySelectorAll(".total-items");
+
+        const quantityInputs = document.querySelectorAll(".quantity");
+          let total = 0;
+          quantityInputs.forEach((input) => {
+            total += parseInt(input.placeholder);
+          });
+
+          totalItems.forEach((item) => {
+            item.innerText = `${total} Items`;
+          });
+      }
+
+      function updateCartItemData(shirtId, quantity) {
+         const priceTagId = `${shirtId}-price`; // 1-price
+            const priceTag = document.getElementById(priceTagId);
+          
+            if (!priceTag) {
+              return;
+            }
+
+            const price = parseInt(priceTag.getAttribute("data-shirt-price"));
+
+              priceTag.innerText = `₹${price * quantity}`;
+              
+              // update the total items in the cart when the quantity changes
+              updateCartQuantity()
+      }
+
+      function removeItemFromCart(shirtId) {
+        const cartItem = document.getElementById(`${shirtId}-cart-item`);
+        cartItem.remove();
+      }
+
+
+      async function addToCart(element, shirtId) {
+          console.log(shirtId);
+        const url = BASE_URL + "/add/" + shirtId;
+
+        // access the sibling input element
+        // and change the placeholder value
+
+        const input = element.previousElementSibling;
+      
+        // increment the value by 1
+        input.placeholder = parseInt(input.placeholder) + 1;
+        
+        updateCartItemData(shirtId, parseInt(input.placeholder));
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.success) {
+          input.placeholder = parseInt(input.placeholder) - 1;
+          updateCartItemData(shirtId, parseInt(input.placeholder));
+          alert("Failed to add to cart");
+        }
+      }
+
+      async function removeFromCart(element, shirtId) {
+        const url = BASE_URL + "/remove/" + shirtId;
+        // access the sibling input element
+        // and change the placeholder value
+
+        const input = element.nextElementSibling;
+
+        // increment the value by 1
+        input.placeholder = parseInt(input.placeholder) - 1;
+          updateCartItemData(shirtId, parseInt(input.placeholder))        
+          
+          if (parseInt(input.placeholder) < 1) {
+          removeItemFromCart(shirtId);
+        }
+
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.success) {
+
+          alert("Failed to remove from cart");
+        }
+      }
+  </script>
+    </body>
+    </html>
