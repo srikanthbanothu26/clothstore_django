@@ -90,5 +90,7 @@ def remove_from_wishlist(request, shirt_id):
 from django.shortcuts import render, get_object_or_404
 @login_required
 def product_view(request, product_id):
+    print(f"Product ID: {product_id}")  # Debug statement
     shirt = get_object_or_404(Shirt, id=product_id)
+    print(f"Shirt: {shirt}")  # Debug statement
     return render(request, "product.html", {"shirt": shirt})
