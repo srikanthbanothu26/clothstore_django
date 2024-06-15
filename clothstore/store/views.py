@@ -87,10 +87,8 @@ def remove_from_wishlist(request, shirt_id):
 
     return JsonResponse({"success": "Shirt removed from wishlist"})
 
-
+from django.shortcuts import render, get_object_or_404
 @login_required
 def product_view(request, product_id):
-
-    shirt = Shirt.objects.get(id=product_id)
-    print(shirt.shirt_sizes.all())
+    shirt = get_object_or_404(Shirt, id=product_id)
     return render(request, "product.html", {"shirt": shirt})
