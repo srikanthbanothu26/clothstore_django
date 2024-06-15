@@ -7,5 +7,5 @@ def home(request):
 
 
 def second_page(request):
-    print("i am in second page")
+    print("i am in second pages ")
     return HttpResponse("Hello, World! This is the second page.")
