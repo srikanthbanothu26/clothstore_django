@@ -5,22 +5,21 @@ from store.models import Shirt
 
 from django.contrib.auth.decorators import login_required
 
-
-# Create your views here.
-
-
 @login_required
 def cart_view(request):
     user = request.user
-
     cart = Cart.objects.filter(user=user)
 
-    quantity = 0
-    for c in cart:
-        quantity += c.quantity
+    total_quantity = sum(item.quantity for item in cart)
+    total_price = sum((item.shirt.discountPrice or item.shirt.price) * item.quantity for item in cart)
 
-    return render(request, "cart.html", {"cart": cart, "quantity": quantity})
+    context = {
+        'cart': cart,
+        'quantity': total_quantity,
+        'total_price': total_price,
+    }
 
+    return render(request, "cart.html", context)
 
 @login_required
 def add_to_cart(request, shirt_id):
