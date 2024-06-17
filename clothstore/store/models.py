@@ -49,7 +49,7 @@ class Shirt(models.Model):
     name = models.CharField(max_length=100)
     price = models.IntegerField()
     description = models.TextField()
-    image = models.ImageField(upload_to="shirt_images/")
+    previewImage = models.ImageField(upload_to="shirt_images/")
     created_at = models.DateTimeField(auto_now_add=True)
     discountPrice = models.IntegerField(default=0)
     category = models.CharField(
@@ -58,6 +58,20 @@ class Shirt(models.Model):
 
     def __str__(self):
         return f"{self.id}-{self.name}"
+
+
+class ShirtImage(models.Model):
+    image = models.ImageField(upload_to="shirt_images/")
+    shirt = models.ForeignKey(Shirt, on_delete=models.CASCADE, related_name="images")
+
+    def __str__(self):
+        return f"{self.shirt.name}-{self.shirt.id}"
+
+
+# shirt1 -> ShirtSize(shirt=shirt1, size="S", quantity=10) (available sizes-> S, M, L, XL)
+# shirt1 -> ShirtSize(shirt=shirt1, size="M", quantity=10) (available sizes-> XS, S, M, L, XL, XXL)
+# shirt1 -> ShirtSize(shirt=shirt1, size="L", quantity=10)
+
 
 
 # shirt1 -> ShirtSize(shirt=shirt1, size="S", quantity=10) (available sizes-> S, M, L, XL)
