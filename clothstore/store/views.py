@@ -1,9 +1,10 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from .models import Shirt, WishList
+from .models import Shirt, WishList, ShirtImage
 from .forms import ShirtModelForm
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
+from cart.models import Cart
 
 
 @login_required
@@ -28,7 +29,8 @@ def products(request):
         # check if the shirt is in the wishlist
         if shirt.wishlist.filter(user=user).exists():
             shirt.is_wished = True
-        print("shirt.is_wished", shirt.is_wished)
+            print("shirt.is_wished", shirt.is_wished)
+
     return render(request, "shirts_home.html", {"shirts": shirts})
 
 
@@ -87,10 +89,14 @@ def remove_from_wishlist(request, shirt_id):
 
     return JsonResponse({"success": "Shirt removed from wishlist"})
 
-from django.shortcuts import render, get_object_or_404
+
 @login_required
 def product_view(request, product_id):
-    print(f"Product ID: {product_id}")  # Debug statement
-    shirt = get_object_or_404(Shirt, id=product_id)
-    print(f"Shirt: {shirt}")  # Debug statement
-    return render(request, "product.html", {"shirt": shirt})
+    shirt = Shirt.objects.get(id=product_id)
+    user = request.user
+    shirt.is_wished = shirt.wishlist.filter(user=user).exists()
+    
+    images=ShirtImage.objects.filter(shirt=shirt)
+    
+    return render(request, "product.html", {"shirt": shirt, "images": images})
+

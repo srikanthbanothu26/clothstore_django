@@ -31,7 +31,10 @@
     }
 </style>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+<link
+rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+/>
 
 {% endblock %}
 
@@ -50,24 +53,17 @@
                 <h2 class="mb-2 font-manrope font-bold text-2xl leading-10 text-gray-900">{{ shirt.name }}
                 </h2>
                 <div class="flex items-center mb-6">
-                    {%  if shirt.discountPrice != 0  %}
-
-                        <h6
-                            class="font-manrope font-semibold text-lg leading-9 text-gray-900 pr-1  mr-1">
-                            ₹{{ shirt.discountPrice  }}</h6>
-      
+                    {% if shirt.discountPrice != 0 %}
+                        <h6 class="price font-manrope font-semibold text-lg leading-9 text-gray-900 pr-1 mr-1"></h6>
                         <span class="text-sm font-medium text-slate-400 line-through">
-                          ₹{{ shirt.price }}
+                            ₹{{ shirt.price }}
                         </span>
                     {% else %}
-                <h6
-            class="font-manrope font-semibold text-lg leading-9 text-gray-900 pr-5 sm:border-r border-gray-200 mr-5">
-        ₹{{ shirt.price  }}</h6>
-    {% endif %}
-    </div>
-                    
-                   
-
+                        <h6 class="price font-manrope font-semibold text-lg leading-9 text-gray-900 pr-5 sm:border-r border-gray-200 mr-5">
+                            ₹{{ shirt.price }}
+                        </h6>
+                    {% endif %}
+                </div>                
                 <p class="text-gray-500 text-base font-normal mb-8 ">
                    {{ shirt.description }}
                 </p>
@@ -88,7 +84,8 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                             <div class="flex items-center justify-center w-full">
                                 <button
-                                    class="group py-4 px-6 border border-gray-400 rounded-l-xl shadow-sm shadow-transparent transition-all duration-500 hover:shadow-gray-300 hover:bg-gray-50">
+                                    class="group py-4 px-6 border border-gray-400 rounded-l-xl shadow-sm shadow-transparent transition-all duration-500 hover:shadow-gray-300 hover:bg-gray-50"
+                                    id="decrement">
                                     <svg class="stroke-gray-700 transition-all duration-500 group-hover:stroke-black"
                                         width="22" height="22" viewBox="0 0 22 22" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -102,9 +99,12 @@
                                 </button>
                                 <input type="text"
                                     class="font-semibold text-gray-900 text-lg py-[13px] px-6 w-full lg:max-w-[118px] border-y border-gray-400 bg-transparent placeholder:text-gray-900 text-center hover:bg-gray-50 focus-within:bg-gray-50 outline-0"
-                                    placeholder="1">
+
+                                    placeholder="1" id="value_inc_or_dec">
                                 <button
-                                    class="group py-4 px-6 border border-gray-400 rounded-r-xl shadow-sm shadow-transparent transition-all duration-500 hover:shadow-gray-300 hover:bg-gray-50">
+                                    class="group py-4 px-6 border border-gray-400 rounded-r-xl shadow-sm shadow-transparent transition-all duration-500 hover:shadow-gray-300 hover:bg-gray-50"
+                                    id="increment">
+                                    
                                     <svg class="stroke-gray-700 transition-all duration-500 group-hover:stroke-black"
                                         width="22" height="22" viewBox="0 0 22 22" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -117,80 +117,50 @@
                                     </svg>
                                 </button>
                             </div>
-                            <button
-                                class="group py-2.5 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-100 hover:shadow-indigo-200">
+                            <button class="group py-2.5 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-100 hover:shadow-indigo-200" onclick="addToCart(this, {{ shirt.id }})">
                                 <svg class="stroke-indigo-600 transition-all duration-500" width="22" height="22"
                                     viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75"
                                         stroke="" stroke-width="1.6" stroke-linecap="round" />
                                 </svg>
-                                Add to cart</button>
+                                Add to cart
+                            </button>
                         </div>
                         <div class="flex items-center gap-3">
-                            <button
-                                class="group transition-all duration-500 p-4 rounded-full bg-indigo-50 hover:bg-indigo-100 hover:shadow-sm hover:shadow-indigo-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26"
-                                    fill="none">
-                                    <path
-                                        d="M4.47084 14.3196L13.0281 22.7501L21.9599 13.9506M13.0034 5.07888C15.4786 2.64037 19.5008 2.64037 21.976 5.07888C24.4511 7.5254 24.4511 11.4799 21.9841 13.9265M12.9956 5.07888C10.5204 2.64037 6.49824 2.64037 4.02307 5.07888C1.54789 7.51738 1.54789 11.4799 4.02307 13.9184M4.02307 13.9184L4.04407 13.939M4.02307 13.9184L4.46274 14.3115"
-                                        stroke="#4F46E5" stroke-width="1.6" stroke-miterlimit="10"
-                                        stroke-linecap="round" stroke-linejoin="round" />
+                            {% if not shirt.is_wished %} 
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 bg-slate-200 rounded-full p-1 shrink-0" onclick="addToWishList(this, {{ shirt.id }})">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                                 </svg>
-
-                            </button>
-                            <button
-                                class=" w-full px-5 py-2.5 rounded-[100px] bg-indigo-600 flex items-center justify-center font-semibold text-lg border border-gray-200 bg-white font-semibold text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700
-                                ">
+                            {% else %}                  
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 bg-slate-200 rounded-full p-1 shrink-0 fill-red-500" onclick="removeFromWishList(this, {{ shirt.id }})">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                </svg>
+                            {% endif %}
+                            <button class=" w-full px-5 py-2.5 rounded-[100px] bg-indigo-600 flex items-center justify-center font-semibold text-lg border border-gray-200 bg-white font-semibold text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
                                 Buy Now
                             </button>
-                        </div>
-
+                        </div>                        
                     </div>
                 </div>
 
             </div>
-            <div>
-                <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff"
-                    class="swiper product-prev mb-6">
+            <div class="grid grid-cols-2 gap-10">
+                <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper product-prev mb-6">
                     <div class="swiper-wrapper flex overflow-hidden w-full">
-                        <div class="swiper-slide shrink-0 ">
-                            <img src="https://pagedone.io/asset/uploads/1700471851.png"
-                                alt="Yellow Travel Bag image" class="mx-auto">
-                        </div>
-                        <div class="swiper-slide shrink-0">
-                            <img src="https://pagedone.io/asset/uploads/1711514857.png"
-                                alt="Yellow Travel Bag image" class="mx-auto">
-                        </div>
-                        <div class="swiper-slide shrink-0">
-                            <img src="https://pagedone.io/asset/uploads/1711514875.png"
-                                alt="Yellow Travel Bag image" class="mx-auto">
-                        </div>
-                        <div class="swiper-slide shrink-0">
-                            <img src="https://pagedone.io/asset/uploads/1711514892.png"
-                                alt="Yellow Travel Bag image" class="mx-auto">
-                        </div>
+                        {% if images%}
+                         <img src="{{ images.first.image.url }}" class="" alt="Image for {{ shirt.name }}">
+                        {%endif%}
                     </div>
-
                 </div>
-                <div thumbsSlider="" class="swiper product-thumb max-w-[608px] mx-auto">
-                    <div class="swiper-wrapper flex">
-                        <div class="swiper-slide basis-1/4">
-                            <img src="https://pagedone.io/asset/uploads/1700471871.png" alt="Travel Bag image"
-                                class=" cursor-pointer border-2 border-gray-50 transition-all duration-500 hover:border-indigo-600 slide:border-indigo-600">
+                <div thumbsSlider="" class="swiper product-thumb grid grid-cols-1 h-full w-full">
+                    <div class="swiper-wrapper grid grid-cols-2 h-full w-full">
+                        {% for x in images%}
+                        <div class="swiper-slide grid grid-flex-cols h-full w-full">
+                            <img src="{{ x.image.url }}" alt="images"
+                                class=" h-52 w-96 cursor-pointer border-2 border-gray-50 transition-all duration-500 hover:border-indigo-600 slide:border-indigo-600">
                         </div>
-                        <div class="swiper-slide">
-                            <img src="https://pagedone.io/asset/uploads/1711514930.png" alt="Travel Bag image"
-                                class=" cursor-pointer border-2 border-gray-50 transition-all duration-500 hover:border-indigo-600 slide:border-indigo-600">
-                        </div>
-                        <div class="swiper-slide">
-                            <img src="https://pagedone.io/asset/uploads/1700471908.png" alt="Travel Bag image"
-                                class=" cursor-pointer border-2 border-gray-50 transition-all duration-500 hover:border-indigo-600 slide:border-indigo-600">
-                        </div>
-                        <div class="swiper-slide">
-                            <img src="https://pagedone.io/asset/uploads/1700471925.png" alt="Travel Bag image"
-                                class=" cursor-pointer border-2 border-gray-50 transition-all duration-500 hover:border-indigo-600 slide:border-indigo-600">
-                        </div>
+                        {%endfor%}
                     </div>
                 </div>
             </div>
@@ -206,8 +176,8 @@
 <script>
     var swiper1 = new Swiper(".product-thumb", {
         loop: true,
-        spaceBetween: 12,
-        slidesPerView: 4,
+        spaceBetween: 2,
+        slidesPerView: 2,
         
         freeMode: true,
         watchSlidesProgress: true,
@@ -215,7 +185,7 @@
     });
     var swiper2 = new Swiper(".product-prev", {
         loop: true,
-        spaceBetween: 32,
+        spaceBetween: 2,
         effect: "fade",
        
         thumbs: {
@@ -224,4 +194,98 @@
         
     });
 </script>
+<script>
+    // Base discount price
+    const baseDiscountPrice = {{ shirt.discountPrice }};
+    
+    // Elements
+    const decrementButton = document.getElementById('decrement');
+    const incrementButton = document.getElementById('increment');
+    const quantityInput = document.getElementById('value_inc_or_dec');
+    const priceElement = document.querySelector('.price');
+
+    // Initialize quantity
+    let quantity = 1;
+    quantityInput.value = quantity;
+
+    // Update price display
+    function updatePrice() {
+        const newPrice = baseDiscountPrice * quantity;
+        priceElement.textContent = `₹${newPrice.toFixed(2)}`;
+    }
+
+    // Decrement quantity
+    decrementButton.addEventListener('click', () => {
+        if (quantity > 1) {
+            quantity--;
+            quantityInput.value = quantity;
+            updatePrice();
+        }
+    });
+
+    // Increment quantity
+    incrementButton.addEventListener('click', () => {
+        quantity++;
+        quantityInput.value = quantity;
+        updatePrice();
+    });
+
+    // Update price initially
+    updatePrice();
+</script>
+
+<script>
+function addToWishList(element, shirtId) {
+    element.classList.add("fill-red-500");
+    const url = `${BASE_URL}/wishlist?shirt_id=${shirtId}`;
+
+    fetch(url).then(response => {
+        response.json().then(data => {
+            if (data.success) {
+                element.setAttribute("onclick", `removeFromWishList(this, ${shirtId})`);
+            } else {
+                element.classList.remove("fill-red-500");
+            }
+        });
+    });
+}
+
+async function removeFromWishList(element, shirtId) {
+    element.classList.remove("fill-red-500");
+    const url = `${BASE_URL}/remove-wishlist/${shirtId}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.success) {
+        element.setAttribute("onclick", `addToWishList(this, ${shirtId})`);
+    } else {
+        element.classList.add("fill-red-500");
+    }
+}
+
+    async function addToCart(element, shirtId) {
+        const quantityInput = document.getElementById('value_inc_or_dec');
+        const quantity = quantityInput.value;
+        const url = `${ADD_CART_URL}${shirtId}?quantity=${quantity}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Added to cart");
+
+            // Update discount price and quantity
+            const baseDiscountPrice = {{ shirt.discountPrice }};
+            const newQuantity = parseInt(quantityInput.value) + 1;
+            quantityInput.value = newQuantity;
+
+            const newPrice = baseDiscountPrice * newQuantity;
+            document.querySelector('.price').textContent = `₹${newPrice.toFixed(2)}`;
+        } else {
+            alert("Failed to add to cart");
+        }
+    }
+</script>
+
 {% endblock %}
