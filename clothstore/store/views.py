@@ -1,6 +1,7 @@
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Shirt, WishList, ShirtImage
+from cart.models import Address
 from .forms import ShirtModelForm
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
@@ -100,3 +101,53 @@ def product_view(request, product_id):
     
     return render(request, "product.html", {"shirt": shirt, "images": images})
 
+
+from django.http import HttpResponse
+
+def order_page(request, shirt_id):
+    shirt = get_object_or_404(Shirt, pk=shirt_id)
+    addresses = Address.objects.filter(user=request.user)
+    return render(request, 'order_page.html', {'shirt': shirt,'addresses': addresses})
+
+def make_payment(request, shirt_id):
+    if request.method == 'POST':
+        return HttpResponse("Payment processed for shirt ID: {}".format(shirt_id))
+    else:
+        return redirect('order_page', shirt_id=shirt_id)
+    
+    
+def add_new_address(request, shirt_id):
+    if request.method=="POST":
+        first_name = request.POST.get('first_name')
+        email = request.POST.get('email')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        zip_code = request.POST.get('zip')
+        phone = request.POST.get('phone')
+
+        if not (first_name and email and address and city and state and zip_code and phone):
+            return JsonResponse({'success': False, 'message': 'All fields are required.'}, status=400)
+
+        Address.objects.create(
+            user=request.user,
+            first_name=first_name,
+            address=address,
+            city=city,
+            state=state,
+            pincode=zip_code,
+            mobile=phone
+        )
+        return redirect('order_page', shirt_id=shirt_id)
+    
+    return render(request,"address_form.html")
+
+from django.contrib import messages
+def delete_address(request, address_id):
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    shirt_id = request.POST.get('shirt_id')  # Retrieve shirt_id from POST data
+    address.delete()
+    messages.success(request, 'Address has been deleted.')
+    
+    # Redirect to order_page with shirt_id
+    return redirect('order_page', shirt_id=shirt_id)

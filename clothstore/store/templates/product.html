@@ -237,7 +237,7 @@ href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
 <script>
 function addToWishList(element, shirtId) {
     element.classList.add("fill-red-500");
-    const url = `${BASE_URL}/wishlist?shirt_id=${shirtId}`;
+    const url = `${BASE_URL}/store/wishlist?shirt_id=${shirtId}`;
 
     fetch(url).then(response => {
         response.json().then(data => {
@@ -252,7 +252,7 @@ function addToWishList(element, shirtId) {
 
 async function removeFromWishList(element, shirtId) {
     element.classList.remove("fill-red-500");
-    const url = `${BASE_URL}/remove-wishlist/${shirtId}`;
+    const url = `${BASE_URL}/store/remove-wishlist/${shirtId}`;
 
     const response = await fetch(url);
     const data = await response.json();
