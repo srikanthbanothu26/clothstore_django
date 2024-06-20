@@ -151,3 +151,22 @@ def delete_address(request, address_id):
     
     # Redirect to order_page with shirt_id
     return redirect('order_page', shirt_id=shirt_id)
+
+def wishlist(request):
+    user = request.user
+    wishlist=WishList.objects.filter(user=user).select_related('shirt')
+    return render(request, "wishlist.html", {"wishlist": wishlist})
+
+
+@login_required
+def Remove_from_Wishlist(request, shirt_id):
+    if not shirt_id:
+        return JsonResponse({"error": "shirt_id is required"})
+
+    # get the shirt object from the shirt id
+    shirt = get_object_or_404(Shirt, id=shirt_id)
+    user = request.user
+    # remove the shirt from the wishlist
+    WishList.objects.filter(shirt=shirt, user=user).delete()
+
+    return redirect('wlist')

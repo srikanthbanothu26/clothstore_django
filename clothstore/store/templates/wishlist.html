@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wishlist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <div class="container mx-auto p-4">
+      <h1 class="text-2xl font-bold mb-4">Your Wishlist</h1>
+      <div class="grid grid-cols-1  gap-4">
+        {% for item in wishlist %}
+        <div class="grid grid-cols-2 grid-flow-cols border p-4 rounded-lg shadow-lg">
+            <div class="w-1/4">
+                <img src="{{ item.shirt.previewImage.url }}" alt="{{ item.shirt.name }}" class="w-full h-48 object-cover mb-4" />
+            </div>
+            <div>
+                <h2 class="text-xl font-semibold mb-2">{{ item.shirt.name }}</h2>
+                <p class="text-gray-600">{{ item.shirt.description }}</p>
+                <p class="text-gray-800 font-bold mt-2">Price: ${{ item.shirt.price }}</p>
+                {% if item.shirt.discountPrice %}
+                <p class="text-red-500 font-bold">Discount Price: ${{ item.shirt.discountPrice }}</p>
+                {% endif %}
+                <form action="{% url 'remove_from_wishlist' item.shirt.id %}" method="post" class="mt-4">
+                    {% csrf_token %}
+                    <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded">Remove from Wishlist</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>
