@@ -104,3 +104,16 @@ class WishList(models.Model):
 
     def __str__(self):
         return f"{self.shirt.name}-{self.shirt.id}"
+    
+from cart.models import Address
+class order_list(models.Model):
+    shirt = models.ForeignKey(Shirt, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} by {self.user}"
+    
+    
+

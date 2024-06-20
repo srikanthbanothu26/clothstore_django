@@ -1,79 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Runway Shirts</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Order Details</h1>
-    <div class="grid lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1 items-center gap-6">
-      <div class="shirt-details space-y-4 grid-rows-1 grid grid-flow-cols justify-center">
-        <h2 class="text-xl font-semibold">{{ shirt.name }}</h2>
-        <p><strong>Price:</strong> ₹{{ shirt.price }}</p>
-        {% if shirt.discountPrice %}
-        <p><strong>Discount Price:</strong> ₹{{ shirt.discountPrice }}</p>
-        {% endif %}
-        <p><strong>Description:</strong> {{ shirt.description }}</p>
-        <p><strong>Category:</strong> {{ shirt.get_category_display }}</p>
-        <div class="sizes">
-          <h3 class="text-lg font-medium">Available Sizes:</h3>
-          <ul class="list-disc list-inside">
-            {% for size in shirt.shirt_sizes.all %}
-            <li>{{ size.size }}: {{ size.quantity }} available</li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div>
-            <!-- Display user addresses -->
-            {% for address in addresses %}
-            <div class="border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-              <label for="address-{{ forloop.counter }}" class="flex items-start">
-                <div class="flex h-5 items-center">
-                  <input
-                    id="address-{{ forloop.counter }}"
-                    aria-describedby="address-{{ forloop.counter }}-text"
-                    type="radio"
-                    name="payment-method"
-                    value="{{ address.id }}"
-                    class="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                    {% if forloop.first %}checked{% endif %}
-                  />
+</head>
+<body class="p-6 bg-gray-100">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold mb-6 text-center">Order Details</h1>
+        <div class="grid lg:grid-cols-2 gap-6">
+            <div class="shirt-details space-y-6">
+                <img class="object-contain rounded-lg shadow" src="{{ shirt.previewImage.url }}" alt="{{ shirt.name }}">
+                <div class="text-center">
+                    <h2 class="text-2xl font-semibold">{{ shirt.name }}</h2>
+                    <p class="text-lg"><strong>Price:</strong> ₹{{ shirt.price }}</p>
+                    {% if shirt.discountPrice %}
+                    <p class="text-lg text-green-500"><strong>Discount Price:</strong> ₹{{ shirt.discountPrice }}</p>
+                    {% endif %}
+                    <p><strong>Description:</strong> {{ shirt.description }}</p>
+                    <p><strong>Category:</strong> {{ shirt.get_category_display }}</p>
                 </div>
-                <div class="ms-4 text-sm">
-                  <h1 class="font-medium leading-none text-gray-900 dark:text-white">
-                    {{ address.first_name }}
-                  </h1>
-                  <p id="address-{{ forloop.counter }}-text" class="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">
-                    {{ address.address }}, {{ address.city }}, {{ address.state }}, {{ address.pincode }}<br>
-                    Phone: {{ address.mobile }}
-                  </p>
+                <div class="sizes">
+                    <h3 class="text-lg font-medium">Available Sizes:</h3>
+                    <ul class="list-disc list-inside ml-4">
+                        {% for size in shirt.shirt_sizes.all %}
+                        <li>{{ size.size }}: {{ size.quantity }} available</li>
+                        {% endfor %}
+                    </ul>
                 </div>
-              </label>
-              <!-- Delete button -->
-              <form method="POST" action="{% url 'delete_address' address.id %}" class="inline">
-                {% csrf_token %}
-                <input type="hidden" name="shirt_id" value="{{ shirt.id }}">
-                <button type="submit" class="mt-2 text-sm text-red-500 hover:text-red-700">Delete</button>
-              </form>            
             </div>
-            {% endfor %}
+            <div>
+                <form action="{% url 'make_order' shirt.id %}" method="post" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <h3 class="text-lg font-medium mb-4">Select Shipping Address</h3>
+                        <div class="space-y-4">
+                            {% for address in addresses %}
+                            <div class="border border-gray-300 bg-gray-50 p-4 rounded-lg dark:border-gray-700 dark:bg-gray-800">
+                                <label for="address-{{ forloop.counter }}" class="flex items-start space-x-4">
+                                    <input
+                                        id="address-{{ forloop.counter }}"
+                                        aria-describedby="address-{{ forloop.counter }}-text"
+                                        type="radio"
+                                        name="address"
+                                        value="{{ address.id }}"
+                                        class="h-4 w-4 text-primary-600 border-gray-300 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-primary-600"
+                                        {% if forloop.first %}checked{% endif %}
+                                    />
+                                    <div class="text-sm">
+                                        <h4 class="font-medium text-gray-900 dark:text-white">{{ address.first_name }}</h4>
+                                        <p id="address-{{ forloop.counter }}-text" class="text-gray-500 dark:text-gray-400">
+                                            {{ address.address }}, {{ address.city }}, {{ address.state }}, {{ address.pincode }}<br>
+                                            Phone: {{ address.mobile }}
+                                        </p>
+                                    </div>
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">Place Order</button>
+                </form>
+                <a href="{% url 'add_new_address' shirt.id %}" class="mt-4 block text-center text-blue-600 hover:underline">Add new Address</a>
+            </div>
         </div>
-    
-        <a href="{% url 'add_new_address' shirt.id %}"
-            class="w-full rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium flex justify-center shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-700 dark:hover:bg-gray-600 dark:focus:ring-primary-600 border border-2 "
-            >
-            Add new Address
-        </a>
-      </div>
-      <div class="grid grid-cols-1 justify-center">
-        <img class="object-contain" src="{{ shirt.previewImage.url }}" alt="{{ shirt.name }}">
-        <form action="{% url 'make_payment' shirt.id %}" method="post" class="mt-4">
-            {% csrf_token %}
-            <button type="submit" class="border border-2 p-2 inline-block w-auto rounded-xl bg-green-600 text-white hover:bg-red-600">Place Order</button>
-        </form>
-      </div>
     </div>
-  </body>
+</body>
 </html>

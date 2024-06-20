@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold mb-6 text-center">Your Order Details</h1>
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="border border-gray-200 p-4 rounded-lg bg-gray-50">
+        <h2 class="text-xl font-semibold mb-2">{{ order.shirt.name }}</h2>
+        <p class="text-lg mb-2"><strong>Price:</strong> ₹{{ order.shirt.price }}</p>
+        {% if order.shirt.discountPrice %}
+        <p class="text-lg text-green-500 mb-2"><strong>Discount Price:</strong> ₹{{ order.shirt.discountPrice }}</p>
+        {% endif %}
+        <p class="mb-2"><strong>Description:</strong> {{ order.shirt.description }}</p>
+        <p class="mb-4"><strong>Category:</strong> {{ order.shirt.get_category_display }}</p>
+        <img class="object-contain rounded-lg shadow mb-4" src="{{ order.shirt.previewImage.url }}" alt="{{ order.shirt.name }}">
+      </div>
+      <div class="border border-gray-200 p-4 rounded-lg bg-gray-50">
+        <h2 class="text-xl font-semibold mb-2">Shipping Address</h2>
+        <p class="text-lg mb-2">{{ order.address.first_name }}</p>
+        <p class="mb-2">{{ order.address.address }}</p>
+        <p class="mb-2">{{ order.address.city }}, {{ order.address.state }}, {{ order.address.pincode }}</p>
+        <p class="text-lg font-medium">Phone: {{ order.address.mobile }}</p>
+      </div>
+    </div>
+    <div class="text-center mt-6">
+      <a href="{% url 'store' %}" class="text-blue-600 hover:underline">Back to Home</a>
+    </div>
+  </div>
+</body>
+</html>

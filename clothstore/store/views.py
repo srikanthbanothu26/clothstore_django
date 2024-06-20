@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Shirt, WishList, ShirtImage
+from .models import Shirt, WishList, ShirtImage, order_list
 from cart.models import Address
 from .forms import ShirtModelForm
 from django.views.decorators.csrf import csrf_protect
@@ -109,6 +109,7 @@ def order_page(request, shirt_id):
     addresses = Address.objects.filter(user=request.user)
     return render(request, 'order_page.html', {'shirt': shirt,'addresses': addresses})
 
+
 def make_payment(request, shirt_id):
     if request.method == 'POST':
         return HttpResponse("Payment processed for shirt ID: {}".format(shirt_id))
@@ -170,3 +171,23 @@ def Remove_from_Wishlist(request, shirt_id):
     WishList.objects.filter(shirt=shirt, user=user).delete()
 
     return redirect('wlist')
+
+
+
+@login_required
+def make_order(request, shirt_id):
+        shirt = get_object_or_404(Shirt, id=shirt_id)
+        user = request.user
+        address_id = request.POST.get('address')
+        address = get_object_or_404(Address, id=address_id, user=user)
+        
+        # Create and save the order
+        order = order_list.objects.create(shirt=shirt, user=user, address=address)
+        
+        return redirect('order_details', order_id=order.id)
+    
+
+@login_required
+def order_details(request, order_id):
+    order = get_object_or_404(order_list, id=order_id, user=request.user)
+    return render(request, 'order_details.html', {'order': order})
