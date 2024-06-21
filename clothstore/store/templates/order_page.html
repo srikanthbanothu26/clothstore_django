@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Runway Shirts</title>
+    <title>Order Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="p-6 bg-gray-100">
@@ -24,7 +24,7 @@
                 <div class="sizes">
                     <h3 class="text-lg font-medium">Available Sizes:</h3>
                     <ul class="list-disc list-inside ml-4">
-                        {% for size in shirt.shirt_sizes.all %}
+                        {% for size in sizes %}
                         <li>{{ size.size }}: {{ size.quantity }} available</li>
                         {% endfor %}
                     </ul>
@@ -37,7 +37,7 @@
                         <h3 class="text-lg font-medium mb-4">Select Shipping Address</h3>
                         <div class="space-y-4">
                             {% for address in addresses %}
-                            <div class="border border-gray-300 bg-gray-50 p-4 rounded-lg dark:border-gray-700 dark:bg-gray-800">
+                            <div class="border border-gray-300 bg-gray-50 p-4 rounded-lg">
                                 <label for="address-{{ forloop.counter }}" class="flex items-start space-x-4">
                                     <input
                                         id="address-{{ forloop.counter }}"
@@ -45,12 +45,12 @@
                                         type="radio"
                                         name="address"
                                         value="{{ address.id }}"
-                                        class="h-4 w-4 text-primary-600 border-gray-300 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-primary-600"
+                                        class="h-4 w-4 text-primary-600 border-gray-300 focus:ring-2 focus:ring-primary-600"
                                         {% if forloop.first %}checked{% endif %}
                                     />
                                     <div class="text-sm">
-                                        <h4 class="font-medium text-gray-900 dark:text-white">{{ address.first_name }}</h4>
-                                        <p id="address-{{ forloop.counter }}-text" class="text-gray-500 dark:text-gray-400">
+                                        <h4 class="font-medium">{{ address.first_name }}</h4>
+                                        <p id="address-{{ forloop.counter }}-text">
                                             {{ address.address }}, {{ address.city }}, {{ address.state }}, {{ address.pincode }}<br>
                                             Phone: {{ address.mobile }}
                                         </p>
@@ -60,7 +60,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <button type="submit" class="w-full py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">Place Order</button>
+                    <button type="submit" class="w-full py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700">Place Order</button>
                 </form>
                 <a href="{% url 'add_new_address' shirt.id %}" class="mt-4 block text-center text-blue-600 hover:underline">Add new Address</a>
             </div>

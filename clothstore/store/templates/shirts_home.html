@@ -1,27 +1,18 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
-
-    <section class="p-8">
-      <div
-        id="card-container"
-        class="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8"
-      >
-
-        {%  for shirt in shirts  %}
-
-        <div class="card flex flex-col gap-2 w-72 w-fit mx-auto">
-          <a href="/store/product/{{ shirt.id }}" >
-
-            <img  src="{{ shirt.previewImage.url  }}" class="rounded-xl object-cover grow h-80 w-72 object-top">
-            </a>
-            <div class="flex items-center justify-between  gap-3 py-2">
-                  <a href="/store/product/{{ shirt.id }}"  class="grow">
-
-                <h2 class="text-lg font-medium grow line-clamp-1" title="{{shirt.name}}" >{{ shirt.name }}</h2>
-                </a>
-                {% if not shirt.is_wished %} 
+<section class="p-8">
+  <div id="card-container" class="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+    {% for shirt in shirts %}
+    <div class="card flex flex-col gap-2 w-72 w-fit mx-auto">
+      <a href="/store/product/{{ shirt.id }}/">
+        <img src="{{ shirt.previewImage.url }}" class="rounded-xl object-cover grow h-80 w-72 object-top">
+      </a>
+      <div class="flex items-center justify-between gap-3 py-2">
+        <a href="/store/product/{{ shirt.id }}" class="grow">
+          <h2 class="text-lg font-medium grow line-clamp-1" title="{{shirt.name}}">{{ shirt.name }}</h2>
+        </a>
+        {% if not shirt.is_wished %} 
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 bg-slate-200 rounded-full p-1 shrink-0" onclick="addToWishList( this, {{ shirt.id }})">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" 
                       />
@@ -31,53 +22,44 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" 
                       />
                     </svg>
-                {% endif %}
-            </div>
-            <p>
-                {%  if shirt.discountPrice != 0  %}
-                  <span class="text-md font-medium ">
-                    ₹{{ shirt.discountPrice }}
-                  </span>
-
-                  <span class="text-sm font-medium text-slate-400 line-through">
-                    ₹{{ shirt.price }}
-                  </span>
-                {% else %}
-                  <span class="text-md font-medium ">
-                    ₹{{ shirt.price }}
-                  </span>
-                {% endif %}
-
-            </p>
-          
-
-            <a href="/store/order/{{shirt.id}}"
-              class="w-full py-2.5 rounded-lg  flex items-center justify-center font-semibold text-md border border-gray-200 bg-white font-semibold text-black hover:bg-black hover:text-white focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition-all duration-500 "
-            >Buy now</a>
-            <button class="group py-2.5 rounded-lg bg-indigo-50 text-indigo-600 font-semibold text-md w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-500 hover:shadow-indigo-200 hover:text-gray-100"  onclick="addToCart(this, {{ shirt.id }})">
-                    Add to cart
-              </button>
-    
-        </div>  
-
-
-        {% endfor %}
-
+          {% endif %}
       </div>
-    </section>
+      <p>
+        {% if shirt.discountPrice != 0 %}
+        <span class="text-md font-medium">
+          ₹{{ shirt.discountPrice }}
+        </span>
+        <span class="text-sm font-medium text-slate-400 line-through">
+          ₹{{ shirt.price }}
+        </span>
+        {% else %}
+        <span class="text-md font-medium">
+          ₹{{ shirt.price }}
+        </span>
+        {% endif %}
+      </p>
+      {% if shirt.shirt_sizes.all %}
+      
+      <button type="submit" class="group py-2.5 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-100 hover:shadow-indigo-200" onclick="addToCart({{ shirt.id }}, 1, '{{ shirt.shirt_sizes.all.size }}')">
+        <svg class="stroke-indigo-600 transition-all duration-500" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75" stroke="" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        Add to cart 
+      </button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
 
-    
-    <script>
-
-      const BASE_URL = "http://" + window.location.host + "/store"
-      const ADD_CART_URL = `http://${window.location.host}/cart/add/`
+<script>
+    const BASE_URL = `http://${window.location.host}/store`;
+    const ADD_CART_URL = `http://${window.location.host}/cart/add/`
 
 
       function addToWishList(element, shirtId) {
         element.classList.add("fill-red-500");
-         const url = BASE_URL +  "/wishlist?shirt_id=" + shirtId;
-        //  http://localhost:8000/store/wishlist/?shirt_id=3
-
+         const url = BASE_URL +  "/add-wishlist/" + shirtId + "/";
 
         fetch(url).then( (response) =>  {
           response.json().then((data) => {
@@ -93,7 +75,7 @@
 
       async function removeFromWishList(element, shirtId) {
         element.classList.remove("fill-red-500");
-        const url = BASE_URL +  "/remove-wishlist/"+shirtId
+        const url = BASE_URL +  "/remove-wishlist/"+shirtId + "/"
         //  http://localhost:8000/store/wishlist/?shirt_id=3
 
         const response = await fetch(url)
@@ -106,24 +88,47 @@
         }
 
       }
-
-      async function addToCart(element, shirtId) {
-        const url = ADD_CART_URL  + shirtId;
-
-        const response = await fetch(url)
-        const data = await response.json()
-
-        if (data.success) {
-          alert("Added to cart")
-        } else {
-          alert("Failed to add to cart")
+      
+  async function addToCart(shirtId, quantity, size) {
+    const url = ADD_CART_URL + shirtId + '/';
+  
+    // Get CSRF token from cookies
+    const csrftoken = getCookie('csrftoken');
+  
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken // Include CSRF token in headers
+      },
+      body: JSON.stringify({ quantity: quantity, size: size })
+    });
+  
+    const data = await response.json();
+  
+    if (data.success) {
+      alert("Added to cart");
+    } else {
+      alert("Failed to add to cart");
+    }
+  }
+  
+  // Function to get CSRF token from cookies
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Check if cookie name matches the requested name
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
         }
-
       }
-
-
-
-    </script>
-
-
+    }
+    return cookieValue;
+  }
+  
+</script>
 {% endblock %}

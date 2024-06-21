@@ -58,6 +58,13 @@ class Shirt(models.Model):
 
     def __str__(self):
         return f"{self.id}-{self.name}"
+    
+    def get_available_quantity(self, size):
+        try:
+            shirt_size = self.shirt_sizes.get(size=size)
+            return shirt_size.quantity
+        except ShirtSize.DoesNotExist:
+            return 0
 
 
 class ShirtImage(models.Model):
@@ -92,7 +99,6 @@ class ShirtSize(models.Model):
     def __str__(self):
         return f"{self.shirt.name}-{self.size}"
 
-
 class WishList(models.Model):
     shirt = models.ForeignKey(Shirt, on_delete=models.CASCADE, related_name="wishlist")
     user = models.ForeignKey(
@@ -103,13 +109,16 @@ class WishList(models.Model):
     )
 
     def __str__(self):
-        return f"{self.shirt.name}-{self.shirt.id}"
+        return f"{self.shirt.name} - {self.user.username}"
+
     
 from cart.models import Address
+
 class order_list(models.Model):
     shirt = models.ForeignKey(Shirt, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    size = models.CharField(max_length=100, choices=SIZE_CHOICES, default='M')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

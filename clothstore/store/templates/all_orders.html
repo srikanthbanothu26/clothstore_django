@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Orders</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white shadow mb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="-ml-2 mr-2 flex items-center md:hidden">
+                        <button class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500" aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <!-- Icon when menu is closed. -->
+                            <!--
+                            Heroicon name: menu
+                            Menu open: "hidden", Menu closed: "block"
+                            -->
+                            <svg class="block h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                            </svg>
+                            <!-- Icon when menu is open. -->
+                            <!--
+                            Heroicon name: x
+                            Menu open: "block", Menu closed: "hidden"
+                            -->
+                            <svg class="hidden h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="#" class="text-2xl font-bold text-gray-900">My Store</a>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="bg-gray-600 shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Order List</h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">Details of all your orders.</p>
+            </div>
+            {% for order in orders %}
+            <div class="border-t bg-white p-6 rounded-lg shadow-lg">
+                <dl>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Shirt Name</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ order.shirt.name }}</dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Order Date</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ order.created_at }}</dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Shipping Address</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ order.address.address }}, {{ order.address.city }}, {{ order.address.state }} - {{ order.address.pincode }}</dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Actions</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <a href="{% url 'order_details' order.id %}" class="text-indigo-600 hover:text-indigo-900">View Details</a>
+                            <button class="ml-4 text-red-600 hover:text-red-900" onclick="deleteOrder('{{ order.id }}')">Delete</button>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script>
+        function deleteOrder(orderId) {
+            if (confirm("Are you sure you want to delete this order?")) {
+                fetch(`/delete_order/${orderId}/`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Order deleted successfully");
+                        window.location.reload(); // Reload the page after deletion
+                    } else {
+                        alert("Failed to delete order");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting order:", error);
+                    alert("Failed to delete order");
+                });
+            }
+        }
+    </script>
+</body>
+</html>

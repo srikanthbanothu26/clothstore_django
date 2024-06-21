@@ -1,11 +1,10 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Shirt, WishList, ShirtImage, order_list
+from .models import Shirt, WishList, ShirtImage, order_list 
 from cart.models import Address
 from .forms import ShirtModelForm
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
-from cart.models import Cart
 
 
 @login_required
@@ -35,13 +34,6 @@ def products(request):
     return render(request, "shirts_home.html", {"shirts": shirts})
 
 
-def test_view(request):
-    students = [
-        {"name": "John", "last_name": "Doe", "age": 24, "email": "john@mail.com"},
-        {"name": "Jane", "last_name": "Doe", "age": 22, "email": "jane@mail.com"},
-    ]
-    return render(request, "test.html", {"stus": students})
-
 
 @csrf_protect
 def new_product(request):
@@ -58,8 +50,7 @@ def new_product(request):
 
 # http://localhost/store/whishlist?shirt_id=1
 @login_required
-def add_to_wishlist(request):
-    shirt_id = request.GET.get("shirt_id")
+def add_to_wishlist(request,shirt_id):
 
     if not shirt_id:
         return JsonResponse({"error": "shirt_id is required"})
@@ -68,16 +59,16 @@ def add_to_wishlist(request):
     shirt = Shirt.objects.get(id=shirt_id)
     user = request.user
     # create a wishlist object
-    whishObject = WishList(shirt=shirt, user=user)
+    whish = WishList(shirt=shirt, user=user)
 
     # save the wishlist object
-    whishObject.save()
+    whish.save()
 
     return JsonResponse({"success": "Shirt added to wishlist"})
 
 
 @login_required
-def remove_from_wishlist(request, shirt_id):
+def Remove_from_Wishlist(request, shirt_id):
 
     if not shirt_id:
         return JsonResponse({"error": "shirt_id is required"})
@@ -89,6 +80,8 @@ def remove_from_wishlist(request, shirt_id):
     WishList.objects.filter(shirt=shirt, user=user).delete()
 
     return JsonResponse({"success": "Shirt removed from wishlist"})
+
+
 
 
 @login_required
@@ -160,34 +153,83 @@ def wishlist(request):
 
 
 @login_required
-def Remove_from_Wishlist(request, shirt_id):
-    if not shirt_id:
-        return JsonResponse({"error": "shirt_id is required"})
-
-    # get the shirt object from the shirt id
+def make_order(request, shirt_id):
     shirt = get_object_or_404(Shirt, id=shirt_id)
-    user = request.user
-    # remove the shirt from the wishlist
-    WishList.objects.filter(shirt=shirt, user=user).delete()
+    
+    # Check if the shirt has any sizes
+    shirt_sizes = shirt.shirt_sizes.all()
+    if not shirt_sizes.exists():
+        # Handle the case where there are no sizes
+        return render(request, 'error_page.html', {'message': 'This shirt is not available in any size.'})
+    
+    # Get the first available size as default
+    default_size = shirt_sizes.first().size
 
-    return redirect('wlist')
+    if request.method == 'POST':
+        address_id = request.POST.get('address')
+        address = get_object_or_404(Address, id=address_id)
+        
+        # Create the order with the default size if size is not provided in POST data
+        size = request.POST.get('size', default_size)
 
+        new_order = order_list(
+            shirt=shirt,
+            user=request.user,
+            address=address,
+            size=size,
+        )
+        new_order.save()
+        return redirect(order_successfull,order_id= new_order.id)  
 
+    addresses = Address.objects.filter(user=request.user)
+    return render(request, 'order_page.html', {'shirt': shirt, 'addresses': addresses, 'sizes': shirt_sizes})
 
 @login_required
-def make_order(request, shirt_id):
-        shirt = get_object_or_404(Shirt, id=shirt_id)
-        user = request.user
-        address_id = request.POST.get('address')
-        address = get_object_or_404(Address, id=address_id, user=user)
-        
-        # Create and save the order
-        order = order_list.objects.create(shirt=shirt, user=user, address=address)
-        
-        return redirect('order_details', order_id=order.id)
-    
+def all_orders(request):
+    orders=order_list.objects.filter(user=request.user)
+    no_of_orders=len(orders)
+    return render(request, "all_orders.html", {"orders": orders, "no_of_orders": no_of_orders})
+
+
 
 @login_required
 def order_details(request, order_id):
     order = get_object_or_404(order_list, id=order_id, user=request.user)
     return render(request, 'order_details.html', {'order': order})
+
+@login_required
+def order_successfull(request, order_id):
+    order = get_object_or_404(order_list, id=order_id, user=request.user)
+    return render(request, 'order_successfull.html', {'order': order})
+
+
+
+def delete_order(request, order_id):
+    if request.method == "DELETE":
+        order = get_object_or_404(order_list, pk=order_id)
+        order.delete()
+        return JsonResponse({"success": True})
+    
+    return JsonResponse({"success": False}, status=400)
+
+import json
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+@require_POST
+@csrf_exempt
+def check_stock(request, shirt_id):
+    data = json.loads(request.body.decode('utf-8'))
+    size = data.get('size')
+    quantity = data.get('quantity')
+    
+    try:
+        shirt = Shirt.objects.get(pk=shirt_id)
+        available_quantity = shirt.get_available_quantity(size)
+        
+        if available_quantity >= quantity:
+            return JsonResponse({'available': True})
+        else:
+            return JsonResponse({'available': False})
+    
+    except Shirt.DoesNotExist:
+        return JsonResponse({'error': 'Shirt not found'}, status=404)
