@@ -22,6 +22,6 @@ urlpatterns = [
     path('all_orders',all_orders, name="all_orders"),
     path('order_successull/<int:order_id>/',order_successfull, name="order_successfull"),
     path('delete_order/<int:order_id>/', delete_order, name="delete_order"),
-    path('check_stock/<int:shirt_id>/', check_stock, name="check_stock")
+    path('check_stock/<int:shirt_id>/', check_stock, name="check_stock"),
     
 ]

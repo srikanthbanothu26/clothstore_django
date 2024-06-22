@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Shirt, WishList, ShirtImage, order_list 
+from .models import Shirt, WishList, ShirtImage, Order 
 from cart.models import Address
 from .forms import ShirtModelForm
 from django.views.decorators.csrf import csrf_protect
@@ -155,42 +155,42 @@ def wishlist(request):
     wishlist=WishList.objects.filter(user=user).select_related('shirt')
     return render(request, "wishlist.html", {"wishlist": wishlist})
 
-
-@login_required
 def make_order(request, shirt_id):
     shirt = get_object_or_404(Shirt, id=shirt_id)
+    addresses = Address.objects.filter(user=request.user)
     
-    # Check if the shirt has any sizes
-    shirt_sizes = shirt.shirt_sizes.all()
-    if not shirt_sizes.exists():
-        # Handle the case where there are no sizes
-        return render(request, 'error_page.html', {'message': 'This shirt is not available in any size.'})
-    
-    # Get the first available size as default
-    default_size = shirt_sizes.first().size
-
     if request.method == 'POST':
         address_id = request.POST.get('address')
-        address = get_object_or_404(Address, id=address_id)
+        size = request.POST.get('size')
         
-        # Create the order with the default size if size is not provided in POST data
-        size = request.POST.get('size', default_size)
-
-        new_order = order_list(
-            shirt=shirt,
-            user=request.user,
-            address=address,
-            size=size,
-        )
-        new_order.save()
-        return redirect(order_successfull,order_id= new_order.id)  
-
-    addresses = Address.objects.filter(user=request.user)
-    return render(request, 'order_page.html', {'shirt': shirt, 'addresses': addresses, 'sizes': shirt_sizes})
-
+        try:
+            selected_address = Address.objects.get(id=address_id, user=request.user)
+        except Address.DoesNotExist:
+            messages.error(request, 'Selected address does not exist.')
+            return redirect('make_order', shirt_id=shirt_id)
+        
+        try:
+            order = Order.objects.create(
+                shirt=shirt,
+                user=request.user,
+                address=selected_address,
+                size=size,
+                quantity=1,
+            )
+            messages.success(request, 'Order placed successfully!')
+            return redirect('order_successfull', order_id=order.id)
+        except Exception as e:
+            messages.error(request, f'Failed to create order: {str(e)}')
+            return redirect('make_order', shirt_id=shirt_id)
+    
+    return render(request, 'order_page.html', {
+        'shirt': shirt,
+        'addresses': addresses,
+    })
+    
 @login_required
 def all_orders(request):
-    orders=order_list.objects.filter(user=request.user)
+    orders=Order.objects.filter(user=request.user)
     no_of_orders=len(orders)
     return render(request, "all_orders.html", {"orders": orders, "no_of_orders": no_of_orders})
 
@@ -198,19 +198,19 @@ def all_orders(request):
 
 @login_required
 def order_details(request, order_id):
-    order = get_object_or_404(order_list, id=order_id, user=request.user)
+    order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'order_details.html', {'order': order})
 
 @login_required
 def order_successfull(request, order_id):
-    order = get_object_or_404(order_list, id=order_id, user=request.user)
+    order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'order_successfull.html', {'order': order})
 
 
 
 def delete_order(request, order_id):
     if request.method == "DELETE":
-        order = get_object_or_404(order_list, pk=order_id)
+        order = get_object_or_404(Order, pk=order_id)
         order.delete()
         return JsonResponse({"success": True})
     

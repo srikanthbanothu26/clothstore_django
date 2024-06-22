@@ -113,16 +113,15 @@ class WishList(models.Model):
 
     
 from cart.models import Address
-
-class order_list(models.Model):
+class Order(models.Model):
     shirt = models.ForeignKey(Shirt, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.CASCADE)
     size = models.CharField(max_length=100, choices=SIZE_CHOICES, default='M')
+    quantity = models.PositiveIntegerField(default=1)  # Add a quantity field
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Order {self.id} by {self.user}"
-    
     
 

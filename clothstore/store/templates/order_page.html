@@ -24,7 +24,7 @@
                 <div class="sizes">
                     <h3 class="text-lg font-medium">Available Sizes:</h3>
                     <ul class="list-disc list-inside ml-4">
-                        {% for size in sizes %}
+                        {% for size in shirt.shirt_sizes.all %}
                         <li>{{ size.size }}: {{ size.quantity }} available</li>
                         {% endfor %}
                     </ul>
@@ -33,6 +33,17 @@
             <div>
                 <form action="{% url 'make_order' shirt.id %}" method="post" class="space-y-6">
                     {% csrf_token %}
+                    <div class="sizes">
+                        <h3 class="text-lg font-medium">Select Size:</h3>
+                        <div class="flex flex-wrap gap-4">
+                            {% for size in shirt.shirt_sizes.all %}
+                            <label class="flex items-center space-x-2">
+                                <input type="radio" name="size" id="size-{{ shirt.id }}-{{ size.id }}" value="{{ size.size }}" class="hidden peer" required>
+                                <span class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-colors duration-300">{{ size.size }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
                     <div>
                         <h3 class="text-lg font-medium mb-4">Select Shipping Address</h3>
                         <div class="space-y-4">

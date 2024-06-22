@@ -32,6 +32,7 @@
 
 {% block content %}
 <section class="py-10 lg:py-20 relative">
+   
     <div class="mx-auto max-w-7xl px-2 sm:px-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             <div class="pro-detail w-full flex flex-col justify-start order-last lg:order-none max-lg:max-w-[608px] max-lg:mx-auto">
@@ -41,7 +42,7 @@
                     <p id="discountPrice">₹{{shirt.discountPrice}}</p>
                     {% if shirt.discountPrice != 0 %}
                         <h6 class="price font-manrope font-semibold text-lg leading-9 text-gray-900 pr-1 mr-1"></h6>
-                        <span class="text-sm font-medium text-slate-400 line-through">
+                        <span class="text-sm font-medium text-slate-400 line-through " id="Price">
                             ₹{{ shirt.price }}
                         </span>
                     {% else %}
@@ -70,12 +71,15 @@
                         <div class="block w-full mb-6">
                             <!-- Size selection -->
                              <p>size</p>
-                            <select id="size-{{ shirt.id }}" class="w-2/10 py-2 px-2 rounded-lg border border-gray-300 items-center flex">
-                            
+                             <div id="size-{{ shirt.id }}" class="flex flex-wrap space-x-2">
                                 {% for size in shirt.shirt_sizes.all %}
-                                <option value="{{ size.size }}">{{ size.size }}</option>
+                                <label class="flex items-center space-x-2">
+                                    <input type="radio" name="size" id="size-{{ shirt.id }}-{{ size.id }}" value="{{ size.size }}" class="hidden peer">
+                                    <span class="px-4 py-2 border border-gray-300 rounded-lg cursor-pointer peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition-colors duration-300">{{ size.size }}</span>
+                                </label>
                                 {% endfor %}
-                            </select>
+                            </div>
+                                                    
                             <div class="grid grid-cols-1 gap-3 item-center">
                                 {% for size in shirt.shirt_sizes.all %}
                                 <p class="">{{ size.size }}-{{ size.quantity }} items left</p>
@@ -152,6 +156,7 @@
         </div>
     </div>
 </section>
+</form>
 {% endblock %}
 
 {% block child_scripts %}
@@ -164,6 +169,10 @@
 
     const originalDiscountPrice = {{ shirt.discountPrice }}; // Use Django template variable to set the initial price
     let discountPrice = originalDiscountPrice;
+
+    const originalPrice = {{ shirt.price }};
+    let Price = originalPrice;
+
 
     document.getElementById("increment").addEventListener("click", function () {
         
@@ -180,6 +189,9 @@
 
         const newDiscountPrice = value * originalDiscountPrice;
         document.getElementById("discountPrice").innerText =`₹${newDiscountPrice}`;
+
+        const newPrice = value * originalPrice;
+        document.getElementById("Price").innerText =`₹${newPrice}`;
     });
 
     document.getElementById("decrement").addEventListener("click", function () {
@@ -196,13 +208,23 @@
 
         const newDiscountPrice = value * originalDiscountPrice;
         document.getElementById("discountPrice").innerText = `₹${newDiscountPrice}`;
-    });
 
+        const newPrice = value * originalPrice;
+        document.getElementById("Price").innerText = `₹${newPrice}`;
+    });
     function checkQuantity(shirtId) {
         const quantity = parseInt(document.getElementById("value_inc_or_dec").value);
-        const size = document.getElementById(`size-${shirtId}`).value;
+        let selectedSize = null;
     
-        if (!size) {
+        // Find the selected size
+        const sizeInputs = document.querySelectorAll(`#size-${shirtId} input[type="radio"]`);
+        sizeInputs.forEach(input => {
+            if (input.checked) {
+                selectedSize = input.value;
+            }
+        });
+    
+        if (!selectedSize) {
             alert("Please select a size");
             return false;
         }
@@ -213,13 +235,13 @@
                 "Content-Type": "application/json",
                 "X-CSRFToken": "{{ csrf_token }}"
             },
-            body: JSON.stringify({ size: size, quantity: quantity })
+            body: JSON.stringify({ size: selectedSize, quantity: quantity })
         })
         .then(response => response.json())
         .then(data => {
             if (data.available) {
                 // Proceed with adding to cart or placing order
-                addToCart(shirtId, quantity, size); // Or your function to place an order
+                addToCart(shirtId, quantity, selectedSize);
             } else {
                 alert("Selected quantity not available for this size");
             }
