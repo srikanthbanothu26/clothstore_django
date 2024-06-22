@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Cart
 from store.models import Shirt
 
@@ -63,14 +63,22 @@ def remove_from_cart(request, shirt_id):
 
     return JsonResponse({"success": "Shirt removed from cart"})
 
-
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Address
 from django.http import JsonResponse
 
 @login_required
 def checkout_page(request):
+    cart=Cart.objects.filter(user=request.user)
+    addresses = Address.objects.filter(user=request.user)
+    total_discount_price = sum(item.shirt.discountPrice for item in cart)
+    return render(request, 'checkout.html',{'addresses': addresses, "cart": cart, 'total_discount_price': total_discount_price })  # Ensure you have this template in your templates directory
+
+from django.contrib import messages
+
+
+@login_required
+def Add_Address(request):
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         email = request.POST.get('email')
@@ -92,8 +100,15 @@ def checkout_page(request):
             pincode=zip_code,
             mobile=phone
         )
-        return JsonResponse({'success': True, 'message': 'Address added successfully!'})
+        return JsonResponse({'success': True, 'message': 'Address added successfully!', 'redirect_url': ''})
     
-    addresses = Address.objects.filter(user=request.user)
-    return render(request, 'checkout.html',{'addresses': addresses})  # Ensure you have this template in your templates directory
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
 
+
+@login_required
+
+def Delete_address(request, address_id):
+    address = get_object_or_404(Address, id=address_id, user=request.user)
+    address.delete()
+    messages.success(request, 'Address has been deleted.')
+    return redirect("checkout")
