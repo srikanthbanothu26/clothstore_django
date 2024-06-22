@@ -17,6 +17,7 @@ class Cart(models.Model):
     def __str__(self):
         return f"{self.shirt.name}-{self.shirt.id}"
 
+from django.conf import settings
 
 class Address(models.Model):
     first_name = models.CharField(max_length=100)
