@@ -22,6 +22,7 @@ from django.conf import settings
 class Address(models.Model):
     first_name = models.CharField(max_length=100)
     address = models.TextField()
+    near_address = models.CharField(max_length=3000, null=True, blank=True) 
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     pincode = models.CharField(max_length=100)
