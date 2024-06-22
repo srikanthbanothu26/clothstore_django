@@ -31,14 +31,14 @@
 {% endblock %}
 
 {% block content %}
-<section class="py-10 lg:py-20 relative cursor-pointer ">
+<section class="py-10 lg:py-20 relative">
     <div class="mx-auto max-w-7xl px-2 sm:px-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
             <div class="pro-detail w-full flex flex-col justify-start order-last lg:order-none max-lg:max-w-[608px] max-lg:mx-auto">
                 <p class="font-medium text-lg text-indigo-600 mb-4">{{ shirt.category }}</p>
                 <h2 class="mb-2 font-manrope font-bold text-2xl leading-10 text-gray-900">{{ shirt.name }}</h2>
                 <div class="flex items-center mb-6">
-                    <p>₹{{shirt.discountPrice}}</p>
+                    <p id="discountPrice">₹{{shirt.discountPrice}}</p>
                     {% if shirt.discountPrice != 0 %}
                         <h6 class="price font-manrope font-semibold text-lg leading-9 text-gray-900 pr-1 mr-1"></h6>
                         <span class="text-sm font-medium text-slate-400 line-through">
@@ -53,13 +53,16 @@
                 <div class="text-gray-500 text-base font-normal mb-8 grid grid-cols-2 ">
                     <p>{{ shirt.description }}</p>
                     {% if not shirt.is_wished %} 
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 bg-slate-200 rounded-full p-1 shrink-0 cursor-pointer" onclick="addToWishList(this, {{ shirt.id }})">
+                        <a href="#"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 bg-slate-200 rounded-full p-1 shrink-0 cursor-pointer" onclick="addToWishList(this, {{ shirt.id }})">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        </a>
+                        </svg>
+                        {% else %}  
+                        <a href= "#">              
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 bg-slate-200 rounded-full p-1 shrink-0 fill-red-500 cursor-pointer" onclick="removeFromWishList(this, {{ shirt.id }})">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                         </svg>
-                        {% else %}                  
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="red" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 bg-slate-200 rounded-full p-1 shrink-0 fill-red-500 cursor-pointer" onclick="removeFromWishList(this, {{ shirt.id }})">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                        </svg>
+                        </a>
                     {% endif %}
                 </div>
                 <div class="block w-full">
@@ -73,9 +76,9 @@
                                 <option value="{{ size.size }}">{{ size.size }}</option>
                                 {% endfor %}
                             </select>
-                            <div class="flex gap-3 item-center">
+                            <div class="grid grid-cols-1 gap-3 item-center">
                                 {% for size in shirt.shirt_sizes.all %}
-                                <p class="">{{ size.quantity }} items left</p>
+                                <p class="">{{ size.size }}-{{ size.quantity }} items left</p>
                                 {% endfor %}
                             </div>
                         </div>
@@ -98,19 +101,19 @@
                                 </button>
                             </div>
                             {% if shirt.shirt_sizes.all %}
-                            {% for size in shirt.shirt_sizes.all %}
+                            
                             <button type="submit" class="group py-2.5 px-5 rounded-full bg-indigo-50 text-indigo-600 font-semibold text-lg w-full flex items-center justify-center gap-2 shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-100 hover:shadow-indigo-200" onclick="addToCart({{ shirt.id }}, 1, '{{ size.size }}')">
                               <svg class="stroke-indigo-600 transition-all duration-500" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10.7394 17.875C10.7394 18.6344 10.1062 19.25 9.32511 19.25C8.54402 19.25 7.91083 18.6344 7.91083 17.875M16.3965 17.875C16.3965 18.6344 15.7633 19.25 14.9823 19.25C14.2012 19.25 13.568 18.6344 13.568 17.875M4.1394 5.5L5.46568 12.5908C5.73339 14.0221 5.86724 14.7377 6.37649 15.1605C6.88573 15.5833 7.61377 15.5833 9.06984 15.5833H15.2379C16.6941 15.5833 17.4222 15.5833 17.9314 15.1605C18.4407 14.7376 18.5745 14.0219 18.8421 12.5906L19.3564 9.84059C19.7324 7.82973 19.9203 6.8243 19.3705 6.16215C18.8207 5.5 17.7979 5.5 15.7522 5.5H4.1394ZM4.1394 5.5L3.66797 2.75" stroke="" stroke-width="1.6" stroke-linecap="round" />
                               </svg>
-                              Add to cart (Size: {{ size.size }})
+                              Add to cart 
                             </button>
-                            {% endfor %}
+                            
                             {% endif %}
                         </div>
                         <div class="flex items-center gap-3">
                             
-                            <a href="/store/order/{{ shirt.id }}" class="w-full py-2.5 rounded-lg flex items-center justify-center font-semibold text-md border border-gray-200 bg-white font-semibold text-black hover:bg-black hover:text-white focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition-all duration-500"
+                            <a href="/store/order/{{ shirt.id }}/" class="w-full py-2.5 rounded-lg flex items-center justify-center font-semibold text-md border border-gray-200 bg-white font-semibold text-black hover:bg-black hover:text-white focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition-all duration-500"
                                 onclick="return checkQuantity({{ shirt.id }})">
                                 Buy now
                             </a>
@@ -118,13 +121,13 @@
                     </div>
                 </div>
             </div>
-            <div class="max-lg:col-span-1 w-full relative">
+            <div class=" w-full  grid-cols-2 grid gap-10">
                 <!-- Main Swiper -->
                 <div class="swiper product-image-slider">
                     <div class="swiper-wrapper">
                         {%if images %}
                         <div class="swiper-slide">
-                            <div class="relative bg-slate-100 rounded-[30px] overflow-hidden h-[400px] sm:h-[440px] md:h-[510px] lg:h-[670px]">
+                            <div class="bg-slate-100  overflow-hidden h-96  w-64">
                                 <img src="{{ images.first.image.url }}" alt="{{ img.alt_text }}" class="w-full h-full object-cover">
                             </div>
                         </div>
@@ -133,15 +136,16 @@
                 </div>
 
                 <!-- Thumbnail Swiper -->
-                <div class="swiper product-image-slider-thumbs mt-6 max-w-[290px] mx-auto lg:mx-0 lg:relative lg:right-[20%] lg:top-10">
+                <div class="swiper product-image-slider-thumbs mt-6 mx-auto">
                     <div class="swiper-wrapper">
-                        {% for img in images %}
-                        <div class="swiper-slide">
-                            <div class="slide:border-indigo-600 w-full h-[68px] border-2 border-transparent overflow-hidden rounded-lg shadow-md shadow-slate-300 transition-all duration-300">
-                                <img src="{{ img.image.url }}" alt="{{ shirt.name }}" class="w-full h-full object-cover">
+                        <div class="swiper-slide grid grid-cols-2 cursor-pointer gap-4">
+                            {% for img in images %}
+                            <div class="slide w-full h-32 border-2 border-blue-600 overflow-hidden rounded-lg shadow-md shadow-slate-300 transition-all duration-300">
+                                <img src="{{ img.image.url }}" alt="{{ shirt.name }}" class="w-full h-full object-cover" 
+                                onclick="changeBorder(this)">
                             </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -152,28 +156,46 @@
 
 {% block child_scripts %}
 <script>
-    const BASE_URL = "http://" + window.location.host + "/store";
+
+    function changeBorder(element) {
+        element.parentElement.style.borderWidth = "2px";
+        element.parentElement.style.borderColor = "red";
+    }
+
+    const originalDiscountPrice = {{ shirt.discountPrice }}; // Use Django template variable to set the initial price
+    let discountPrice = originalDiscountPrice;
 
     document.getElementById("increment").addEventListener("click", function () {
+        
         const valueField = document.getElementById("value_inc_or_dec");
         let value = parseInt(valueField.value);
         if (isNaN(value)) {
             value = 1;
+            
         } else {
             value++;
+
         }
         valueField.value = value;
+
+        const newDiscountPrice = value * originalDiscountPrice;
+        document.getElementById("discountPrice").innerText =`₹${newDiscountPrice}`;
     });
 
     document.getElementById("decrement").addEventListener("click", function () {
+        
         const valueField = document.getElementById("value_inc_or_dec");
         let value = parseInt(valueField.value);
         if (isNaN(value) || value <= 1) {
             value = 1;
         } else {
             value--;
+            
         }
         valueField.value = value;
+
+        const newDiscountPrice = value * originalDiscountPrice;
+        document.getElementById("discountPrice").innerText = `₹${newDiscountPrice}`;
     });
 
     function checkQuantity(shirtId) {
@@ -209,7 +231,7 @@
     
     function addToWishList(element, shirtId) {
         element.classList.add("fill-red-500");
-        const url = `${BASE_URL}/add-wishlist/${shirtId}/`; // Update URL to match your Django route
+        const url = `${BASE_URL}store/add-wishlist/${shirtId}/`; // Update URL to match your Django route
         
         fetch(url)
             .then(response => response.json())
@@ -229,7 +251,7 @@
     async function removeFromWishList(element, shirtId) {
         element.classList.remove("fill-red-500");
         
-        const response = await fetch(`${BASE_URL}/remove-wishlist/${shirtId}/`); // Update URL to match your Django route
+        const response = await fetch(`${BASE_URL}store/remove-wishlist/${shirtId}/`); // Update URL to match your Django route
         const data = await response.json();
     
         if (data.success) {
@@ -240,7 +262,7 @@
     }
     
         
-    const ADD_CART_URL = `http://${window.location.host}/cart/add/` 
+    
 
     async function addToCart(shirtId, quantity, size) {
         const csrftoken = getCookie('csrftoken'); // Ensure getCookie function is defined and working correctly
@@ -280,6 +302,7 @@
         }
         return cookieValue;
         }
+    
         
 </script>
 {% endblock %}

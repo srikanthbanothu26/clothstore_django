@@ -13,15 +13,18 @@
         {% for item in wishlist %}
         <div class="grid grid-cols-2 grid-flow-cols border p-4 rounded-lg shadow-lg">
             <div class="w-1/4">
+              <a href="{% url 'product_view' item.shirt.id %}">
                 <img src="{{ item.shirt.previewImage.url }}" alt="{{ item.shirt.name }}" class="w-full h-48 object-cover mb-4" />
+              </a>
             </div>
             <div>
-                <h2 class="text-xl font-semibold mb-2">{{ item.shirt.name }}</h2>
+                <a href="{% url 'product_view' item.shirt.id %}"><h2 class="text-xl font-semibold mb-2">{{ item.shirt.name }}</h2></a>
                 <p class="text-gray-600">{{ item.shirt.description }}</p>
                 <p class="text-gray-800 font-bold mt-2">Price: ${{ item.shirt.price }}</p>
                 {% if item.shirt.discountPrice %}
                 <p class="text-red-500 font-bold">Discount Price: ${{ item.shirt.discountPrice }}</p>
                 {% endif %}
+                <a href="{% url 'product_view' item.shirt.id %}" class="text-indigo-600 hover:text-indigo-900">View Details</a>
                 <form action="{% url 'remove_from_wishlist' item.shirt.id %}" method="post" class="mt-4">
                     {% csrf_token %}
                     <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded">Remove from Wishlist</button>

@@ -5,6 +5,9 @@ from cart.models import Address
 from .forms import ShirtModelForm
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
+import json
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 
 @login_required
@@ -67,6 +70,7 @@ def add_to_wishlist(request,shirt_id):
     return JsonResponse({"success": "Shirt added to wishlist"})
 
 
+@csrf_protect
 @login_required
 def Remove_from_Wishlist(request, shirt_id):
 

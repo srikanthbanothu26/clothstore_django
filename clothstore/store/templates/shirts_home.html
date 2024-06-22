@@ -9,7 +9,7 @@
         <img src="{{ shirt.previewImage.url }}" class="rounded-xl object-cover grow h-80 w-72 object-top">
       </a>
       <div class="flex items-center justify-between gap-3 py-2">
-        <a href="/store/product/{{ shirt.id }}" class="grow">
+        <a href="/store/product/{{ shirt.id }}/" class="grow">
           <h2 class="text-lg font-medium grow line-clamp-1" title="{{shirt.name}}">{{ shirt.name }}</h2>
         </a>
         {% if not shirt.is_wished %} 
