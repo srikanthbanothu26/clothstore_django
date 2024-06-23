@@ -70,10 +70,10 @@
                             </div>
                             {% endfor %}
                         </div>
+                        <a href="{% url 'add_new_address' shirt.id %}" class="mt-4 block text-center text-blue-600 hover:underline">Add new Address</a>
                     </div>
                     <button type="submit" class="w-full py-3 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-700">Place Order</button>
                 </form>
-                <a href="{% url 'add_new_address' shirt.id %}" class="mt-4 block text-center text-blue-600 hover:underline">Add new Address</a>
             </div>
         </div>
     </div>

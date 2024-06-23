@@ -117,7 +117,7 @@
                         </div>
                         <div class="flex items-center gap-3">
                             
-                            <a href="/store/order/{{ shirt.id }}/" class="w-full py-2.5 rounded-lg flex items-center justify-center font-semibold text-md border border-gray-200 bg-white font-semibold text-black hover:bg-black hover:text-white focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition-all duration-500"
+                            <a href="{%url 'make_order' shirt.id %}" class="bg-blue-600 hover:bg-blue-400  hover:text-gray-200 text-white w-full py-2.5 rounded-lg flex items-center justify-center font-semibold text-md border border-gray-200  font-semibold "
                                 onclick="return checkQuantity({{ shirt.id }})">
                                 Buy now
                             </a>

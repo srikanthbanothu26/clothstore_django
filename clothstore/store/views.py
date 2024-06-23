@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 import json
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
+
 
 
 @login_required
@@ -101,11 +103,6 @@ def product_view(request, product_id):
 
 from django.http import HttpResponse
 
-def order_page(request, shirt_id):
-    shirt = get_object_or_404(Shirt, pk=shirt_id)
-    addresses = Address.objects.filter(user=request.user)
-    return render(request, 'order_page.html', {'shirt': shirt,'addresses': addresses})
-
 
 def make_payment(request, shirt_id):
     if request.method == 'POST':
@@ -113,42 +110,47 @@ def make_payment(request, shirt_id):
     else:
         return redirect('order_page', shirt_id=shirt_id)
     
-    
+import requests   
 def add_new_address(request, shirt_id):
-    if request.method=="POST":
+    if request.method == "POST":
         first_name = request.POST.get('first_name')
         email = request.POST.get('email')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        state = request.POST.get('state')
-        zip_code = request.POST.get('zip')
         phone = request.POST.get('phone')
+        village = request.POST.get('village', '').strip()
+        city = request.POST.get('city', '').strip()
+        state = request.POST.get('state', '').strip()
+        apikey = "pk.ed10c7b21526a2babc266be91ccebef9"
+        url = f"https://api.locationiq.com/v1/autocomplete.php?key={apikey}&q={village}%20{city}%20{state}&limit=5&dedupe=1"
 
-        if not (first_name and email and address and city and state and zip_code and phone):
-            return JsonResponse({'success': False, 'message': 'All fields are required.'}, status=400)
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                resp = response.json()
 
-        Address.objects.create(
-            user=request.user,
-            first_name=first_name,
-            address=address,
-            city=city,
-            state=state,
-            pincode=zip_code,
-            mobile=phone
-        )
-        return redirect('order_page', shirt_id=shirt_id)
+                # Assuming the first result is relevant, extract address details
+                if resp:
+                    first_result = resp[0]
+                    near_address = first_result.get('display_address', 'N/A')
+                    pincode = first_result.get('address', {}).get('postcode', 'N/A')
+
+                    # Create the address object if all required fields are present
+                    if first_name and email and village and city and state and pincode and phone:
+                        Address.objects.create(
+                            user=request.user,
+                            first_name=first_name,
+                            address=f"{village}, {city}, {state}",
+                            near_address=near_address,
+                            city=city,
+                            state=state,
+                            pincode=pincode,
+                            mobile=phone
+                        )
+                return redirect('make_order', shirt_id=shirt_id)
+        except requests.exceptions.RequestException as e:
+            return JsonResponse({'success': False, 'message': f'Error: {e}'}, status=500)
     
     return render(request,"address_form.html")
 
-from django.contrib import messages
-def delete_address(request, address_id):
-    address = get_object_or_404(Address, id=address_id, user=request.user)
-    shirt_id = request.POST.get('shirt_id')  # Retrieve shirt_id from POST data
-    address.delete()
-    messages.success(request, 'Address has been deleted.')
-    
-    # Redirect to order_page with shirt_id
-    return redirect('order_page', shirt_id=shirt_id)
 
 def wishlist(request):
     user = request.user

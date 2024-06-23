@@ -13,9 +13,14 @@ class Cart(models.Model):
         default=None,
     )
     quantity = models.IntegerField(default=1)
+    price = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.shirt.name}-{self.shirt.id}"
+    
+    def update_price(self):
+        self.price = self.quantity * self.shirt.discountPrice
+        self.save()
 
 from django.conf import settings
 

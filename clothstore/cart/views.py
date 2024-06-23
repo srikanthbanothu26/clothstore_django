@@ -2,8 +2,9 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Cart
 from store.models import Shirt
-
 from django.contrib.auth.decorators import login_required
+import requests
+from django.contrib import messages
 
 @login_required
 def cart_view(request):
@@ -11,7 +12,7 @@ def cart_view(request):
     cart = Cart.objects.filter(user=user)
 
     total_quantity = sum(item.quantity for item in cart)
-    total_price = sum((item.shirt.discountPrice or item.shirt.price) * item.quantity for item in cart)
+    total_price = sum(item.price for item in cart)
 
     context = {
         'cart': cart,
@@ -32,12 +33,13 @@ def add_to_cart(request, shirt_id):
 
     if cart.exists():
         cart = cart.first()
-        cart.quantity += 1
+        cart.quantity += 1 
+        cart.update_price()
         cart.save()
         return JsonResponse({"success": "Shirt added to cart"})
 
     shirt = Shirt.objects.get(id=shirt_id)
-    cart = Cart(shirt=shirt, user=user)
+    cart = Cart(shirt=shirt, user=user, price=shirt.discountPrice)
     cart.save()
 
     return JsonResponse({"success": "Shirt added to cart"})
@@ -70,40 +72,62 @@ from django.http import JsonResponse
 @login_required
 def checkout_page(request):
     cart=Cart.objects.filter(user=request.user)
+    total_discount_price = sum(item.price for item in cart)
     addresses = Address.objects.filter(user=request.user)
-    total_discount_price = sum(item.shirt.discountPrice for item in cart)
+    
     return render(request, 'checkout.html',{'addresses': addresses, "cart": cart, 'total_discount_price': total_discount_price })  # Ensure you have this template in your templates directory
 
-from django.contrib import messages
-
+from django.shortcuts import render
+from django.http import JsonResponse
+import requests
 
 @login_required
 def Add_Address(request):
     if request.method == "POST":
         first_name = request.POST.get('first_name')
         email = request.POST.get('email')
-        address = request.POST.get('address')
-        city = request.POST.get('city')
-        state = request.POST.get('state')
-        zip_code = request.POST.get('zip')
         phone = request.POST.get('phone')
+        village = request.POST.get('village', '').strip()
+        city = request.POST.get('city', '').strip()
+        state = request.POST.get('state', '').strip()
+        apikey = "pk.ed10c7b21526a2babc266be91ccebef9"
+        url = f"https://api.locationiq.com/v1/autocomplete.php?key={apikey}&q={village}%20{city}%20{state}&limit=5&dedupe=1"
 
-        if not (first_name and email and address and city and state and zip_code and phone):
-            return JsonResponse({'success': False, 'message': 'All fields are required.'}, status=400)
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                resp = response.json()
 
-        Address.objects.create(
-            user=request.user,
-            first_name=first_name,
-            address=address,
-            city=city,
-            state=state,
-            pincode=zip_code,
-            mobile=phone
-        )
-        return JsonResponse({'success': True, 'message': 'Address added successfully!', 'redirect_url': ''})
-    
+                # Assuming the first result is relevant, extract address details
+                if resp:
+                    first_result = resp[0]
+                    near_address = first_result.get('display_address', 'N/A')
+                    pincode = first_result.get('address', {}).get('postcode', 'N/A')
+
+                    # Create the address object if all required fields are present
+                    if first_name and email and village and city and state and pincode and phone:
+                        Address.objects.create(
+                            user=request.user,
+                            first_name=first_name,
+                            address=f"{village}, {city}, {state}",
+                            near_address=near_address,
+                            city=city,
+                            state=state,
+                            pincode=pincode,
+                            mobile=phone
+                        )
+                        return JsonResponse({'success': True, 'message': 'Address added successfully!','redirect_url': ''})
+                    else:
+                        return JsonResponse({'success': False, 'message': 'All fields are required.'}, status=400)
+                else:
+                    return JsonResponse({'success': False, 'message': 'No matching address found.'}, status=404)
+            else:
+                return JsonResponse({'success': False, 'message': 'Failed to fetch address details from API.'}, status=500)
+
+        except requests.exceptions.RequestException as e:
+            return JsonResponse({'success': False, 'message': f'Error: {e}'}, status=500)
+
     return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
-
 
 @login_required
 
@@ -112,3 +136,35 @@ def Delete_address(request, address_id):
     address.delete()
     messages.success(request, 'Address has been deleted.')
     return redirect("checkout")
+
+
+from store.models import Order
+
+def make_orders(request, shirt_id):
+    shirt = get_object_or_404(Shirt, id=shirt_id)
+    
+    
+    if request.method == 'POST':
+        address_id = request.POST.get('address')
+        size = request.POST.get('size')
+        
+        try:
+            selected_address = Address.objects.get(id=address_id, user=request.user)
+        except Address.DoesNotExist:
+            messages.error(request, 'Selected address does not exist.')
+            return redirect('make_order', shirt_id=shirt_id)
+        
+        try:
+            order = Order.objects.create(
+                shirt=shirt,
+                user=request.user,
+                address=selected_address,
+                size=size,
+                quantity=1,
+            )
+            messages.success(request, 'Order placed successfully!')
+            return JsonResponse({'success': True, 'message': 'order added successfully!'})
+        except Exception as e:
+            messages.error(request, f'Failed to create order: {str(e)}')
+            return redirect('make_orders', shirt_id=shirt_id)
+    
