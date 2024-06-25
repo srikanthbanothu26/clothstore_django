@@ -2,7 +2,7 @@
 
 {% block content %}
 <section class="p-8">
-  <div id="card-container" class="relative grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+  <div id="card-container" class="relative grid grid-cols-5 gap-8">
     {% for shirt in shirts %}
     <div class="card flex flex-col gap-2 w-72 w-fit mx-auto">
       <a href= "{% url 'product_view' shirt.id %}">
@@ -38,12 +38,12 @@
         </span>
         {% endif %}
       </p>
-      
+      <!--
       <div class="grid grid-cols-5 gap-2">
         {% for size in shirt.shirt_sizes.all%}
         <button class="grid border-2 rounded-xl border-gray-200 bg-blue-400 text-white">{{size.size}}</button>
         {%endfor%}
-      </div>
+      </div>-->
       
       
       <p>
