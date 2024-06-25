@@ -139,32 +139,39 @@ def Delete_address(request, address_id):
 
 
 from store.models import Order
-
-def make_orders(request, shirt_id):
-    shirt = get_object_or_404(Shirt, id=shirt_id)
-    
-    
+def make_orders(request):
     if request.method == 'POST':
         address_id = request.POST.get('address')
-        size = request.POST.get('size')
-        
+        selected_sizes = request.POST.getlist('size')  # get the list of selected sizes
+        shirt_ids = request.POST.getlist('shirt_id')  # get the list of shirt ids
+
         try:
             selected_address = Address.objects.get(id=address_id, user=request.user)
         except Address.DoesNotExist:
             messages.error(request, 'Selected address does not exist.')
-            return redirect('make_order', shirt_id=shirt_id)
-        
+            return redirect('make_order')
+
         try:
-            order = Order.objects.create(
-                shirt=shirt,
-                user=request.user,
-                address=selected_address,
-                size=size,
-                quantity=1,
-            )
-            messages.success(request, 'Order placed successfully!')
-            return JsonResponse({'success': True, 'message': 'order added successfully!'})
+            orders = []
+            for shirt_id, size in zip(shirt_ids, selected_sizes):
+                shirt = get_object_or_404(Shirt, id=shirt_id)
+                order = Order.objects.create(
+                    shirt=shirt,
+                    user=request.user,
+                    address=selected_address,
+                    size=size,
+                    quantity=1,
+                )
+                orders.append(order)
+            order_details = ', '.join([f"{order.shirt.name} (Size: {order.size})" for order in orders])
+            success_message = f"Orders placed successfully! You ordered: {order_details}."
+            messages.success(request, success_message)
+
+            return JsonResponse({
+                'success': True,
+                'message': success_message,
+                'orders': [{'shirt': order.shirt.name, 'size': order.size} for order in orders]
+            })
         except Exception as e:
-            messages.error(request, f'Failed to create order: {str(e)}')
-            return redirect('make_orders', shirt_id=shirt_id)
-    
+            messages.error(request, f'Failed to create orders: {str(e)}')
+            return redirect('make_orders')

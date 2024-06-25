@@ -1,232 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Runway Shirts - Order Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-gray-100 text-gray-900">
-    <div class=" mx-auto p-4 grid ">
-        <div class="grid grid-cols-1  gap-8">
-        <form id="order-form">
-            <!-- cart section -->
-            <div class="mt-12 gap-10">
-                <div class="">
-                    <h2 class="text-2xl font-semibold mb-4">Cart Summary</h2>
-                    <div class="bg-white rounded-lg shadow-md">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Item</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        view</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Price</th>
-                                    <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        size(SELECT SIZE)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                {% for item in cart %}
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10">
-                                                <img src="{{ item.shirt.previewImage.url }}"
-                                                    alt="{{ item.shirt.name }}"
-                                                    class="h-10 w-10 object-cover rounded-full">
+    <div class="mx-auto p-4 grid">
+        <div class="grid grid-cols-1 gap-8">
+            <form id="order-form">
+                <div class="mt-12 gap-10">
+                    <div>
+                        <h2 class="text-2xl font-semibold mb-4">Cart Summary</h2>
+                        <div class="bg-white rounded-lg shadow-md">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">View</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size (Select Size)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    {% for item in cart %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 h-10 w-10">
+                                                    <img src="{{ item.shirt.previewImage.url }}" alt="{{ item.shirt.name }}" class="h-10 w-10 object-cover rounded-full">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">{{ item.shirt.name }}</div>
+                                                    <div class="text-sm text-gray-500">Quantity: {{ item.quantity }}</div>
+                                                </div>
                                             </div>
-                                            <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900">{{ item.shirt.name }}</div>
-                                                <div class="text-sm text-gray-500">Quantity: {{ item.quantity }}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <a href="{% url 'product_view' item.shirt.id %}" >
-                                        view product details </a>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ item.price }}</td
-                                        >
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <a href="{% url 'product_view' item.shirt.id %}">View product details</a>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.price }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex gap-4">
+                                            <input type="hidden" name="shirt_id" value="{{ item.shirt.id }}">
                                             {% for size in item.shirt.shirt_sizes.all %}
-                                                <label>
-                                                    <input type="checkbox" name="size" value="{{ size.size }}"> {{ size.size }}
-                                                </label>
+                                            <label>
+                                                <input type="checkbox" name="size" value="{{ size.size }}"> {{ size.size }}
+                                            </label>
                                             {% endfor %}
-                                        </td>                                   
-                                </tr>
-                                {% endfor %}
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Total</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">--</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ total_discount_price }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Total</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">--</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ total_discount_price }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>  
-            <div>
-                {% if addresses %}
-                        {% for address in addresses %}
-                        <div class="flex items-center justify-between border border-gray-200 rounded-lg p-4">
-                            <div>
-                                <input id="address-{{ address.id }}" type="radio" name="address"
-                                    value="{{ address.id }}" class="form-radio h-5 w-5 text-primary-500">
-                                <label for="address-{{ address.id }}" class="font-medium text-lg">{{ address.first_name }}</label>
-                                <p class="text-sm text-gray-600">{{ address.address }}, {{ address.city }},
-                                    {{ address.state }}, {{ address.pincode }}</p>
-                                <p class="text-sm text-gray-600">Phone: {{ address.mobile }}</p>
-                            </div>
-                            <a href="{% url 'Delete-Address' address.id %}"
-                                class="text-red-600 border-2 border-gray-200 py-1 px-2 rounded-md hover:bg-red-50">Remove
-                                        Address</a>
+                <div>
+                    {% if addresses %}
+                    {% for address in addresses %}
+                    <div class="flex items-center justify-between border border-gray-200 rounded-lg p-4">
+                        <div>
+                            <input id="address-{{ address.id }}" type="radio" name="address" value="{{ address.id }}" class="form-radio h-5 w-5 text-primary-500">
+                            <label for="address-{{ address.id }}" class="font-medium text-lg">{{ address.first_name }}</label>
+                            <p class="text-sm text-gray-600">{{ address.address }}, {{ address.city }}, {{ address.state }}, {{ address.pincode }}</p>
+                            <p class="text-sm text-gray-600">Phone: {{ address.mobile }}</p>
+                        </div>
+                        <a href="{% url 'Delete-Address' address.id %}" class="text-red-600 border-2 border-gray-200 py-1 px-2 rounded-md hover:bg-red-50">Remove Address</a>
                     </div>
                     {% endfor %}
                     {% else %}
                     <p class="text-sm text-gray-600">No addresses found. Please add an address.</p>
                     {% endif %}
-            </div>                 
-            <button type="button"
-            class="w-full px-4 py-2 text-sm text-white font-medium bg-blue-600 rounded-lg shadow-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-            onclick="Neworder()">place order</button>     
-        </form> 
+                </div>
+                <button type="button" class="w-full px-4 py-2 text-sm text-white font-medium bg-blue-600 rounded-lg shadow-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2" onclick="Neworder()">Place Order</button>
+            </form>
         </div>
 
         <!-- Address Form Section -->
-        <div class=" p-6 rounded-lg shadow-md grid grid-cols-2">
+        <div class="p-6 rounded-lg shadow-md grid grid-cols-2">
             <div class="bg-gray-200 border-2 grid grid-cols-1">
                 <h2 class="text-2xl font-semibold mb-4">Add New Address</h2>
                 <form id="address-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
-                        <input type="text" id="first_name" name="first_name"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
-                            placeholder="Enter your first name" required>
+                        <input type="text" id="first_name" name="first_name" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50" placeholder="Enter your first name" required>
                     </div>
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" id="email" name="email"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
-                            placeholder="Enter your email" required>
+                        <input type="email" id="email" name="email" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50" placeholder="Enter your email" required>
                     </div>
                     <div>
                         <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                        <input type="tel" id="phone" name="phone"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
-                            placeholder="Enter your phone number" required>
+                        <input type="tel" id="phone" name="phone" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50" placeholder="Enter your phone number" required>
                     </div>
                     <div>
                         <label for="colony" class="block text-sm font-medium text-gray-700">Colony Name</label>
-                        <input type="text" id="colony" name="colony"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
-                            placeholder="Enter your colony" required>
+                        <input type="text" id="colony" name="colony" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50" placeholder="Enter your colony" required>
                     </div>
                     <div>
                         <label for="village" class="block text-sm font-medium text-gray-700">Village Name</label>
-                        <input type="text" id="village" name="village"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
-                            placeholder="Enter your village" required>
+                        <input type="text" id="village" name="village" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50" placeholder="Enter your village" required>
                     </div>
                     <div>
                         <label for="city" class="block text-sm font-medium text-gray-700">City Name</label>
-                        <input type="text" id="city" name="city"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
-                            placeholder="Enter city" required>
+                        <input type="text" id="city" name="city" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50" placeholder="Enter city" required>
                     </div>
                     <div>
                         <label for="state" class="block text-sm font-medium text-gray-700">State Name</label>
-                        <input type="text" id="state" name="state"
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50"
-                            placeholder="Enter state" required>
+                        <input type="text" id="state" name="state" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50" placeholder="Enter state" required>
                     </div>
                     <div class="col-span-full">
-                    <button type="button"
-                            class="w-full px-4 py-2 text-sm text-white font-medium bg-blue-600 rounded-lg shadow-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                            onclick="addNewAddress()">Add Address</button>
+                        <button type="button" class="w-full px-4 py-2 text-sm text-white font-medium bg-blue-600 rounded-lg shadow-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2" onclick="addNewAddress()">Add Address</button>
                     </div>
                 </form>
             </div>
             <div>
             </div>
-        </div>   
+        </div>
     </div>
 
     <script>
-      async function addNewAddress() {
-        const formElement = document.getElementById("address-form");
-        const formData = new FormData(formElement);
-        const csrfToken = '{{ csrf_token }}';
-    
-        try {
-            const response = await fetch("{% url 'Add_Address' %}", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": csrfToken,
-                    "Accept": "application/json",
-                },
-                body: formData,
-            });
-    
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-    
-            const data = await response.json();
-            if (data.success) {
-                alert('Address added successfully!');
-                formElement.reset();
-                
-                // Check if there is a redirect URL provided
-                if (data.redirect_url) {
-                    window.location.href = data.redirect_url;
-                } else {
-                    // Update addresses section dynamically
-                    // You can reload the addresses section or append the new address to the list
-                    // Example: reloadAddresses();
-                    // or updateAddressList(data.new_address);
-                }
-            } else {
-                alert('Failed to add address: ' + data.message);
-            }
-        } catch (error) {
-            console.error('Error adding new address:', error);
-            alert('Error adding new address. Please try again.');
-        }
-    }
-    
-    </script>
-    
-    <script>
-        async function Neworder() {
-            const formElement = document.getElementById("order-form");
+        async function addNewAddress() {
+            const formElement = document.getElementById("address-form");
             const formData = new FormData(formElement);
-            const sizeChecked = formElement.querySelector('input[name="size"]:checked');
-            const addressChecked = formElement.querySelector('input[name="address"]:checked');
-    
-            if (!sizeChecked || !addressChecked) {
-                alert('Please select a shirt size and an address before placing the order.');
-                return;
-            }
-    
             const csrfToken = '{{ csrf_token }}';
-    
+
             try {
-                
-                // Replace '0' with the actual value of shirtId dynamically fetched from your template context
-                const shirtId = '{% if cart %}{{ cart.0.shirt.id }}{% endif %}';
-                const response = await fetch("{% url 'make_orders' 0 %}".replace('0', shirtId), {
+                const response = await fetch("{% url 'Add_Address' %}", {
                     method: "POST",
                     headers: {
                         "X-CSRFToken": csrfToken,
@@ -234,25 +141,67 @@
                     },
                     body: formData,
                 });
-    
+
                 if (!response.ok) {
                     throw new Error('Network response was not ok.');
                 }
-    
+
                 const data = await response.json();
                 if (data.success) {
-                    alert('Order placed successfully!');
+                    alert('Address added successfully!');
                     formElement.reset();
-    
+
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
                 } else {
-                    alert('Failed to place order: ' + data.message);
+                    alert('Failed to add address: ' + data.message);
                 }
             } catch (error) {
-                console.error('Error placing order:', error);
-                alert('Error placing order. Please try again.');
+                console.error('Error adding new address:', error);
+                alert('Error adding new address. Please try again.');
             }
         }
-    </script>
-</body>
 
+        async function Neworder() {
+            const formElement = document.getElementById("order-form");
+            const formData = new FormData(formElement);
+            const sizeChecked = formElement.querySelector('input[name="size"]:checked');
+            const addressChecked = formElement.querySelector('input[name="address"]:checked');
+        
+            if (!sizeChecked || !addressChecked) {
+                alert('Please select a shirt size and an address before placing the order.');
+                return;
+            }
+        
+            const csrfToken = '{{ csrf_token }}';
+        
+            try {
+                const response = await fetch("{% url 'make_orders' %}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Accept": "application/json",
+                    },
+                    body: formData,
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+        
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message); // Display the detailed success message from the server
+                    formElement.reset();
+                } else {
+                    alert('Failed to place orders: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error placing orders:', error);
+                alert('Error placing orders. Please try again.');
+            }
+        }
+    </script>        
+</body>
 </html>
