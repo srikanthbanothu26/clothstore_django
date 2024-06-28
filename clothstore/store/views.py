@@ -161,6 +161,7 @@ def make_order(request, shirt_id):
     shirt = get_object_or_404(Shirt, id=shirt_id)
     addresses = Address.objects.filter(user=request.user)
     
+    
     if request.method == 'POST':
         address_id = request.POST.get('address')
         size = request.POST.get('size')
